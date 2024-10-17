@@ -1,0 +1,34 @@
+Anforderungen
+
+- Das System soll ermöglichen, dass autorisierte Anwender Arbeitsberichte zu ihrer Arbeitszeit bei DVM erstellen.
+
+Einzelne Arbeitsberichte sollen dabei folgende Information enthalten: 	
+- Wie viele Minuten wurde gearbeitet.
+- An welchem Tag (Datum) wurde die Arbeit verrichtet.
+- Für welches Modul wurde gearbeitet.
+- Inhalt der getanen Arbeit (kurzer Bericht)
+
+Es soll drei verschiedene Gruppen von Anwendern geben: einfache Anwender, VIP Anwender, und Administratoren.
+
+Jede Person soll sich registrieren können und als einfacher Anwender das System benutzen können.
+
+Für einfache Anwender gilt: 	
+- Sie können die Online-Umgebung nutzen, um ihre Berichte zu "posten" / verwalten / anzeigen.
+- Einfache Anwender können zu VIP Anwendern werden, wenn sie das beantragen, und ein Administrator das genehmigt hat.
+
+Für VIP Anwender gilt zusätzlich zu dem was für einfache Anwender gilt: 	
+- Sie können ihre Daten in einer maschinenlesbaren Struktur ihrer Wahl - JSON, CSV, oder XML, runterladen können.
+- Sie können ihre Daten hochladen um so die Online-Daten zu überschreiben.
+- VIP Anwender können Administratoren werden, wenn sie es beantragen und ein Administrator das genehmigt hat.
+
+Für Administratoren gilt, zusätzlich zu dem was für VIP Anwender gilt: 	
+- Sie können festlegen zu welchen Modulen berichtet werden kann.
+- Sie können VIP-Ansuchen genehmigen.
+- Sie können Administrator-Ansuchen genehmigen.
+- Sie können sehen, welche Anwender es im System gibt und welche Rechte / Rollen diese haben.
+- Sie können Anwender sperren, sodass diese nicht mehr auf das System zugreifen können.
+
+Das System soll jedem Anwender eine Übersicht darstellen aus welcher herausgeht wie viel Zeit er kumulativ für welches Modul gearbeitet hat, und wie viel (in %) der gesamten Arbeitszeit dies ausmachte. Diese Übersicht soll als Bericht, entsprechend visuell für das Medium "DIN A4" angepasst, ausgedruckt werden können.
+
+
+
