@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Login</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'login.css' %}">
+</head>
+
+<body>
+
+    <header>
+        <h1>DVM-Zeiterfassung</h1>
+    </header>
+
+    <div class="container">
+        <h2>Einloggen</h2>
+        <form id="loginForm" method="post">
+            {% csrf_token %}
+            <label>Benutzername:</label><input type="text" name="username" required>
+            <label>Passwort:</label><input type="password" name="password" required>
+            <button type="submit">Abschicken</button>
+        </form>
+
+        <p class="link">Noch kein Konto? <a href="{% url 'register' %}">Jetzt registrieren</a></p>
+    </div>
+
+    <script>
+    document.getElementById('loginForm').onsubmit = async function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        const response = await fetch("{% url 'login' %}", {
+            method: "POST",
+            headers: { "X-CSRFToken": formData.get('csrfmiddlewaretoken') },
+            body: formData
+        });
+        
+        const data = await response.json();
+        if (response.ok) {
+            window.location.href = data.redirect_url;
+        } else {
+            alert("Login fehlgeschlagen. Bitte überprüfe deine Anmeldedaten.");
+        }
+    };
+    </script>
+
+</body>
+
+</html>
