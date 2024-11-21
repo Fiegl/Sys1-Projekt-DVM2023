@@ -1,29 +1,24 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="de">
-
 <head>
     <meta charset="UTF-8">
     <title>Home</title>
     <link rel="stylesheet" type="text/css" href="{% static 'home.css' %}">
 </head>
-
 <body>
     <header>
         <div class="header-content">
-            <div class="logo">Logo + Name</div>
+            <div class="logo">DVM-Zeiterfassung</div>
             <a href="#" class="profile-link">Zur Profilseite</a>
         </div>
     </header>
-
     <main>
         <h2>Willkommen zur Eingangsseite, {{ username }}!</h2>
-
         <div class="actions">
             <button class="action-btn">Neuen Arbeitsbericht anlegen</button>
             <button class="action-btn">Alle Berichte anzeigen</button>
         </div>
-
         <div class="recent">
             <h3>Zuletzt bearbeitet</h3>
             <div class="report">
@@ -31,7 +26,6 @@
                 <button class="view-btn">Anzeigen</button>
             </div>
         </div>
-
         <!-- Logout-Button -->
         <form action="{% url 'logout' %}" method="post" class="logout-form">
             {% csrf_token %}
@@ -39,6 +33,6 @@
         </form>
     </main>
 </body>
-
 </html>
+
 
