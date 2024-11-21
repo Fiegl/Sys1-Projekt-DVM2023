@@ -3,8 +3,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import make_password, check_password
 from .db_utils import create_user, authenticate_user
 
-# Pfad zur JSON-Datei
+# Pfade zu JSON-Dateien
 USER_FILE = "/var/www/buchungssystem/db/users.json"
+arbeitsbericht_erstellen = "/var/www/buchungssystem/db/arbeitsberichte.json" #Pfad zur JSON-Datei mit den abgespeicherten Arbeitsberichten
 
 def register_view(request):
     if request.method == "POST":
@@ -67,3 +68,38 @@ def logout_view(request):
     # Session löschen
     request.session.flush()
     return redirect("login")
+
+def arbeitsbericht_erstellen_view(request):
+    return render(request, "meine_app/Arbeitsbericht_erstellen.html")
+
+def arbeitsbericht_speichern(request):
+    if request.method == "POST":
+        benutzer = request.session.get("username")                                              #hier die einzelnen values in der JSON
+        modul = request.POST.get("modul")
+        berichtsname = request.POST.get("berichtsname")
+        startzeit = request.POST.get("startzeit")
+        endzeit = request.POST.get("endzeit")
+        kommentare = request.POST.get("kommentare")
+
+        try:
+            with open(arbeitsbericht_erstellen, "r", encoding="utf-8") as datei:                #Daten werden aus JSON als String geladen (Serialisierung)
+                berichte = json.load(datei)
+        except FileNotFoundError:
+            berichte = {}
+
+        if benutzer not in berichte:                                                            #hier werden für den benutzer (Key in der JSON) die jeweiligen Berichte gespeichert
+            berichte[benutzer] = {}
+
+
+        neue_id = max(map(int, berichte[benutzer].keys()), default=0) + 1                       #in der JSON ist benutzer der KEY, bekommt eine ID zugeordnet,
+                                                                                                #jeder Arbeitsbericht bekommt eine fortlaufende Nr. zugeordnet
+
+        berichte[benutzer][neue_id] = [modul, berichtsname, startzeit, endzeit, kommentare]     #Später prüfen, ob alte Berichte von neuen überschrieben werden
+
+
+        with open(arbeitsbericht_erstellen, "w", encoding="utf-8") as datei:                    #Deserialisierung
+            json.dump(berichte, datei, indent=4)
+
+        return redirect("home")                                                                 #Nach dem Speichern des Arbeitsberichtes zurück auf die home.html
+
+    return render(request, "meine_app/Arbeitsbericht_erstellen.html")  
