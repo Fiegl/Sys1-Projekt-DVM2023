@@ -2,8 +2,11 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.login_view, name='login'),  # Root-URL auf login_view setzen
+    path('', views.login_view, name='login'),
     path('register/', views.register_view, name='register'),
-    path('home/', views.home_view, name='home'),  # Home-Seite auf '/home/' verschieben
+    path('home/', views.home_view, name='home'),
     path('logout/', views.logout_view, name='logout'),
+    path('arbeitsbericht_erstellen/', views.arbeitsbericht_erstellen_view, name='arbeitsbericht_erstellen'),
+    path('arbeitsbericht_speichern/', views.arbeitsbericht_speichern, name='arbeitsbericht_speichern'),
+    
 ]
