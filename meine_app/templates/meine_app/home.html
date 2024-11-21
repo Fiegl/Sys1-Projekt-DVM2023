@@ -16,17 +16,18 @@
     <main>
         <h2>Willkommen zur Eingangsseite, {{ username }}!</h2>
         <div class="actions">
-            <button class="action-btn">Neuen Arbeitsbericht anlegen</button>
+            <button class="action-btn">
+                <a href="{% url 'arbeitsbericht_erstellen' %}">Neuen Arbeitsbericht anlegen</a>
+            </button>
             <button class="action-btn">Alle Berichte anzeigen</button>
         </div>
         <div class="recent">
             <h3>Zuletzt bearbeitet</h3>
             <div class="report">
                 <span>Bericht ABC <span class="date">vom dd.mm.yyyy</span></span>
-                <button class="view-btn">Anzeigen</button>
+                <button class="view-btn">Anzeigen</button>  <!--mit a-Element verschachteln, sodass komplette Fläche anklickbar--> 
             </div>
         </div>
-        <!-- Logout-Button -->
         <form action="{% url 'logout' %}" method="post" class="logout-form">
             {% csrf_token %}
             <button type="submit" class="logout-btn">Logout</button>
