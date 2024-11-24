@@ -1,0 +1,43 @@
+{
+    "Benutzer1": {
+        "1": [
+            "Modulnummer",
+            "Berichtsname",
+            "Startzeit",
+            "Endzeit",
+            "Kommentar"
+        ],
+        "2": [
+            "Modulnummer",
+            "Berichtsname",
+            "Startzeit",
+            "Endzeit",
+            "Kommentar"
+        ]
+    },
+    "Stefan": {
+        "1": [
+            "1.5.1 System-Analyse",
+            "JSON-Datei f\u00fcr Speicherung Arbeitsberichte anlegen",
+            "2024-11-21T09:15",
+            "2024-11-21T13:45",
+            "Geplantes Ziel konnte erreicht werden. \r\nN\u00e4chster Schritt: Template Arbeitsberichte_anzeigen erstellen mit entsprechender Funktion"
+        ],
+        "2": [
+            "1.5.1 System-Analyse",
+            "Jour fix mit dem Projekt-Team",
+            "2024-11-24T16:15",
+            "2024-11-24T17:00",
+            45,
+            "Heute besch\u00e4ftigen wir uns mit weiteren, tollen Funktionen (unter anderem haben eine Funktion eingebaut, wieviel Zeit wir pro Modul verbraucht haben und wieviel Prozent davon)."
+        ],
+        "3": [
+            "1.4.2 Requirements Engeneering",
+            "Test",
+            "2024-11-21T10:00",
+            "2024-11-21T17:33",
+            453,
+            ""
+        ]
+    }
+}
