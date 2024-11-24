@@ -10,28 +10,28 @@
     <header>
         <div class="header-content">
             <div class="logo">DVM-Zeiterfassung</div>
-            <a href="#" class="profile-link">Zur Profilseite</a>
+            <form action="{% url 'logout' %}" method="post" class="logout-form">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">Logout</button>
+            </form>
         </div>
     </header>
     <main>
         <h2>Willkommen zur Eingangsseite, {{ username }}!</h2>
-        <div class="actions">
-            <button class="action-btn">
-                <a href="{% url 'arbeitsbericht_erstellen' %}">Neuen Arbeitsbericht anlegen</a>
-            </button>
-            <button class="action-btn">Alle Berichte anzeigen</button>
-        </div>
-        <div class="recent">
-            <h3>Zuletzt bearbeitet</h3>
-            <div class="report">
-                <span>Bericht ABC <span class="date">vom dd.mm.yyyy</span></span>
-                <button class="view-btn">Anzeigen</button>  <!--mit a-Element verschachteln, sodass komplette Fläche anklickbar--> 
+        <div class="grid-container">
+            <div id="kachel1" class="kachel">
+                <a href="{% url 'arbeitsbericht_erstellen' %}">neuen Arbeitsbericht anlegen</a>
+            </div>
+            <div id="kachel2" class="kachel">
+                <a href="{% url 'arbeitsberichte_anzeigen' %}">alle Berichte anzeigen</a>
+            </div>
+            <div id="kachel3" class="kachel">
+                <a href="">Download & Drucken</a>
+            </div>
+            <div id="kachel4" class="kachel">
+                <a href="">dein Profil</a>
             </div>
         </div>
-        <form action="{% url 'logout' %}" method="post" class="logout-form">
-            {% csrf_token %}
-            <button type="submit" class="logout-btn">Logout</button>
-        </form>
     </main>
 </body>
 </html>
