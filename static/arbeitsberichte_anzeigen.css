@@ -1,0 +1,84 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+header {
+    position: relative; /* Position für absolute Platzierung des Buttons */
+    background-color: #007acc;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    display: flex;
+    justify-content: space-between; /* Inhalte links und rechts verteilen */
+    align-items: center;
+}
+
+.logo-name {
+    font-size: 24px;
+    font-weight: bold;
+    margin-left: 10px; /* Optional: Abstand zum Rand */
+}
+
+.back-button {
+    position: absolute; /* Absolute Positionierung im Header */
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%); /* Vertikale Zentrierung */
+    padding: 8px 16px;
+    background-color: #0099cc;
+    color: white;
+    text-decoration: none; /* Entfernt Unterstreichung */
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.back-button:hover {
+    background-color: #00e61f;
+}
+
+main {
+    padding: 20px;
+    max-width: 900px;
+    margin: auto;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    color: #333;
+}
+
+.berichte-container {
+    margin-top: 20px;
+}
+
+.benutzer-berichte {
+    margin-bottom: 30px;
+    padding: 15px;
+    background-color: #eef9ff;
+    border: 1px solid #007acc;
+    border-radius: 5px;
+}
+
+.benutzer-berichte h3 {
+    margin-top: 0;
+    color: #007acc;
+}
+
+.benutzer-berichte ul {
+    list-style: none;
+    padding: 0;
+}
+
+.benutzer-berichte li {
+    margin-bottom: 10px;
+    text-align: left;
+    line-height: 1.5;
+}
