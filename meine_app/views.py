@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import make_password, check_password
 from .db_utils import create_user, authenticate_user
@@ -94,7 +95,12 @@ def arbeitsbericht_speichern(request):
         neue_id = max(map(int, berichte[benutzer].keys()), default=0) + 1                       #in der JSON ist benutzer der KEY, bekommt eine ID zugeordnet,
                                                                                                 #jeder Arbeitsbericht bekommt eine fortlaufende Nr. zugeordnet
 
-        berichte[benutzer][neue_id] = [modul, berichtsname, startzeit, endzeit, kommentare]     #Später prüfen, ob alte Berichte von neuen überschrieben werden
+        timeStart = datetime.fromisoformat(startzeit)                                           #Zeitdifferenz zwischen Start und Endzeit wird direkt hier ausgerechnet und mit in die JSON gespeichert.
+        timeEnd = datetime.fromisoformat(endzeit)
+        deltaRaw = timeEnd-timeStart
+        zeitdauer = int(deltaRaw.total_seconds()/60)
+                                                                                               
+        berichte[benutzer][neue_id] = [modul, berichtsname, startzeit, endzeit, zeitdauer, kommentare]     #Später prüfen, ob alte Berichte von neuen überschrieben werden
 
 
         with open(arbeitsbericht_erstellen, "w", encoding="utf-8") as datei:                    #Deserialisierung
