@@ -1,142 +1,47 @@
-/* Grundstil für die Seite */
 body {
     font-family: Arial, sans-serif;
     background-color: #f2f2f2;
-    margin-top: 100px;
+    margin: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-/* Header-Stil */
 header {
     width: 100%;
     background-color: #007acc;
-    padding: 30px;
     color: white;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 10;
+    padding: 10px 0;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    position: relative; /* Ermöglicht zentriertes Logo mit Flexbox */
 }
 
 .header-content {
     display: flex;
-    justify-content: center; /* Inhalt zentrieren */
+    justify-content: center; /* Zentriert den Logo-Text horizontal */
     align-items: center;
     max-width: 1200px;
     margin: 0 auto;
-    position: relative; /* Für absolute Positionierung */
+    padding: 0 20px;
+    position: relative; /* Positionierung des Logout-Buttons */
 }
 
-/* Logo zentrieren */
 .logo {
+    font-size: 24px; /* Etwas größere Schrift */
     font-weight: bold;
-    font-size: 1.5em;
-    color: white;
-    position: absolute;
-    left: 50%; /* Zentriere horizontal */
-    transform: translateX(-50%); /* Zentrierung durch Verschiebung */
 }
 
-/* Profil-Link bleibt rechts */
-.profile-link {
-    padding: 10px 20px;
-    background-color: #a0d911;
-    color: #333;
-    border-radius: 20px;
-    text-decoration: none;
-    position: absolute;
-    right: 0; /* Positioniere rechts */
-}
-
-
-/* Hauptinhalt */
-main {
-    max-width: 800px;
-    width: 100%;
-    margin-top: 20px;
-    padding: 20px;
-}
-
-h2 {
-    text-align: center;
-    font-size: 1.8em;
-    color: #333;
-}
-
-/* Aktionen */
-.actions {
-    display: flex;
-    justify-content: space-around;
-    margin: 20px 0;
-}
-
-.action-btn {
-    padding: 15px 20px;
-    background-color: #d4edda;
-    color: #333;
-    border: 2px solid #28a745;
-    border-radius: 10px;
-    cursor: pointer;
-}
-
-.action-btn:hover {
-    background-color: #c3e6cb;
-}
-
-/* Zuletzt bearbeitet */
-.recent {
-    border: 1px solid #ddd;
-    padding: 20px;
-    margin-top: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-}
-
-.recent h3 {
-    margin-top: 0;
-    font-size: 1.2em;
-    color: #333;
-}
-
-.report {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border: 2px solid #28a745;
-    border-radius: 10px;
-    margin-top: 10px;
-}
-
-.report .date {
-    color: #999;
-    font-style: italic;
-}
-
-.view-btn {
-    padding: 8px 15px;
-    background-color: #d4edda;
-    color: #333;
-    border: 1px solid #28a745;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.view-btn:hover {
-    background-color: #c3e6cb;
-}
-
-/* Logout-Button */
 .logout-form {
-    text-align: center;
-    margin-top: 30px;
+    position: absolute; /* Positioniert den Logout-Button unabhängig vom Logo */
+    right: 20px; /* Abstand vom rechten Rand */
+    top: 50%; /* Vertikale Mitte */
+    transform: translateY(-50%); /* Exakte Zentrierung vertikal */
+    margin: 0;
 }
 
 .logout-btn {
-    padding: 10px 20px;
-    background-color: #2ab648;
+    padding: 8px 16px;
+    background-color: #ff4d4d;
     color: white;
     border: none;
     border-radius: 5px;
@@ -144,5 +49,57 @@ h2 {
 }
 
 .logout-btn:hover {
-    background-color: #2ab648;
+    background-color: #00e61f;
 }
+
+main {
+    max-width: 800px;
+    width: 100%;
+    margin-top: 20px;
+    padding: 20px;
+    text-align: center;
+}
+
+h2 {
+    text-align: center;
+    font-size: 1.8em;
+    color: black;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2 Spalten */
+    gap: 50px; /* Abstand zwischen den Kacheln */
+    justify-items: center; /* Zentriert die Kacheln */
+    margin: 80px;
+}
+
+.kachel {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 150px;
+    background-color: #d4edda;
+    border: 2px solid #28a745;
+    border-radius: 10px;
+    font-size: 25px;
+    font-weight: bold;
+    color: black;
+    cursor: pointer;
+}
+
+.kachel:hover {
+    background-color: #c3e6cb;
+}
+
+.kachel a {
+    text-decoration: none; /* Entfernt Unterstreichen */
+    color: inherit; /* Beibehaltung der Kachel-Farbe */
+}
+
+.kachel a:hover, .kachel a:focus, .kachel a:active {
+    text-decoration: none; /* Kein Effekt bei Hover oder Klick */
+    color: inherit; /* Keine Farbänderung */
+}
+
