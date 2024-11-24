@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>alle Arbeitsberichte</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'arbeitsberichte_anzeigen.css' %}">
+</head>
+<body>
+    <header>
+        <div class="logo-name">DVM-Zeiterfassung</div>
+        <a href="{% url 'home' %}" class="back-button">zur Startseite</a>
+    </header>
+    <main>
+        <h2>Alle Arbeitsberichte</h2>
+        <div class="berichte-container">
+            {% if berichte %}
+                {% for benutzer, berichte_dict in berichte.items %}
+                    <div class="benutzer-berichte">
+                        <h3>Benutzer: {{ benutzer }}</h3>
+                        <ul>
+                            {% for id, details in berichte_dict.items %}
+                                <li>
+                                    <strong>Bericht-ID:</strong> {{ id }}<br>
+                                    <strong>Modul:</strong> {{ details.0 }}<br>
+                                    <strong>Berichtsname:</strong> {{ details.1 }}<br>
+                                    <strong>Startzeit:</strong> {{ details.2 }}<br>
+                                    <strong>Endzeit:</strong> {{ details.3 }}<br>
+                                    <strong>Kommentare:</strong> {{ details.4 }}<br>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>Es wurden noch keine Arbeitsberichte erstellt.</p>
+            {% endif %}
+        </div>
+    </main>
+</body>
+</html>
