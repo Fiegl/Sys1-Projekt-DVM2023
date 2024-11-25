@@ -1,6 +1,7 @@
 import json
 from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import make_password, check_password
+from django.http import HttpResponseBadRequest
 from datetime import datetime #wird für Uhrzeiten benötigt
 
 # Pfade zu JSON-Dateien
