@@ -13,6 +13,7 @@ def register_view(request):
         username = request.POST.get("username")
         password = request.POST.get("password")
         hashed_password = make_password(password)
+        status_user = request.POST.get("status")
 
         # Benutzer laden
         try:
@@ -28,7 +29,7 @@ def register_view(request):
             return render(request, "meine_app/register.html", {"error": "Benutzername existiert bereits"})
 
         # Benutzer hinzufügen
-        users.append({"username": username, "password": hashed_password})
+        users.append({"username": username, "password": hashed_password, "status": status_user})
         data["users"] = users  # Benutzerliste aktualisieren
 
         # Daten in JSON speichern
