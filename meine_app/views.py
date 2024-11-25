@@ -16,7 +16,7 @@ def register_view(request):
         hashed_password = make_password(password)
         status_user = request.POST.get("status")
         if status_user != "basis":                 # Überprüfe den Token-Wert serverseitig auf 'basis', damit kein Hacker sich Admin-Rechte von Anfang sichern kann. 
-            return HttpResponseBadRequest('Ungültiger Token')
+            return HttpResponseBadRequest('Ungültiger Status des neuen Users!!!')
 
         # Benutzer laden
         try:
