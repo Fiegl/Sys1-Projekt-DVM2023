@@ -1,6 +1,7 @@
 import json
 from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import make_password, check_password
+from django.http import HttpResponseBadRequest
 from datetime import datetime #wird für Uhrzeiten benötigt
 
 # Pfade zu JSON-Dateien
@@ -13,6 +14,9 @@ def register_view(request):
         username = request.POST.get("username")
         password = request.POST.get("password")
         hashed_password = make_password(password)
+        status_user = request.POST.get("status")
+        if status_user != "basis":                 # Überprüfe den Token-Wert serverseitig auf 'basis', damit kein Hacker sich Admin-Rechte von Anfang sichern kann. 
+            return HttpResponseBadRequest('Ungültiger Status des neuen Users!!!')
 
         # Benutzer laden
         try:
@@ -28,7 +32,7 @@ def register_view(request):
             return render(request, "meine_app/register.html", {"error": "Benutzername existiert bereits"})
 
         # Benutzer hinzufügen
-        users.append({"username": username, "password": hashed_password})
+        users.append({"username": username, "password": hashed_password, "status": status_user})
         data["users"] = users  # Benutzerliste aktualisieren
 
         # Daten in JSON speichern
