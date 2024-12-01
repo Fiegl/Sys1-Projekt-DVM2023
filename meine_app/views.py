@@ -1,12 +1,13 @@
-import json
+import json, csv
 from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import make_password, check_password
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest, HttpResponse, JsonResponse
 from datetime import datetime #wird für Uhrzeiten benötigt
 
 # Pfade zu JSON-Dateien
 registrierte_benutzer = "/var/www/buchungssystem/db/users.json"
 arbeitsbericht_erstellen = "/var/www/buchungssystem/db/arbeitsberichte.json" #Pfad zur JSON-Datei mit den abgespeicherten Arbeitsberichten
+datenbank_module = "/var/www/buchungssystem/db/module.json"
 
 
 def register_view(request):
@@ -32,7 +33,7 @@ def register_view(request):
             return render(request, "meine_app/register.html", {"error": "Benutzername existiert bereits"})
 
         # Benutzer hinzufügen
-        users.append({"username": username, "password": hashed_password, "status": status_user})
+        users.append({"username": username, "password": hashed_password, "status": status_user, "zugriff": True})
         data["users"] = users  # Benutzerliste aktualisieren
 
         # Daten in JSON speichern
@@ -62,11 +63,11 @@ def login_view(request):
 
         # Benutzer validieren
         for user in users:
-            if user["username"] == username and check_password(password, user["password"]):
+            if user["username"] == username and check_password(password, user["password"]) and user["zugriff"] == True:
                 request.session["username"] = username  # Session setzen
                 return redirect("home")
 
-        return render(request, "meine_app/login.html", {"error": "Ungültige Anmeldedaten"})
+        return render(request, "meine_app/login.html", {"error": "Ungültige Anmeldedaten oder dein Account wurde gesperrt!"})
     return render(request, "meine_app/login.html")
 
 
@@ -82,8 +83,17 @@ def logout_view(request):
     request.session.flush()
     return redirect("login")
 
+
 def arbeitsbericht_erstellen_view(request):
-    return render(request, "meine_app/Arbeitsbericht_erstellen.html")
+    try:
+        with open(datenbank_module, 'r', encoding='utf-8') as file:
+            module = json.load(file)['module']
+    except FileNotFoundError:
+        return HttpResponseBadRequest('Module-Datei nicht auf Server gefunden')
+    except json.JSONDecodeError:
+        return HttpResponseBadRequest('Fehler beim Laden der JSON-Module-Datei')
+    return render(request, 'meine_app/arbeitsbericht_erstellen.html', {'module': module})
+
 
 def arbeitsbericht_speichern(request):
     if request.method == "POST":
@@ -92,6 +102,7 @@ def arbeitsbericht_speichern(request):
         berichtsname = request.POST.get("berichtsname")
         startzeit = request.POST.get("startzeit")
         endzeit = request.POST.get("endzeit")
+        breaktime = request.POST.get("breaktime")
         kommentare = request.POST.get("kommentare")
 
         try:
@@ -111,9 +122,10 @@ def arbeitsbericht_speichern(request):
         timeEnd = datetime.fromisoformat(endzeit)
         deltaRaw = timeEnd-timeStart
         zeitdauer = int(deltaRaw.total_seconds()/60)                                            #Aufruf Methode total_seconds von date-time-Modul
+        pausenzeit = int(breaktime)
+        netto_arbeitszeit = zeitdauer - pausenzeit
 
-
-        berichte[benutzer][neue_id] = [modul, berichtsname, startzeit, endzeit, zeitdauer, kommentare]     #Später prüfen, ob alte Berichte von neuen überschrieben werden
+        berichte[benutzer][neue_id] = [modul, berichtsname, startzeit, endzeit, zeitdauer, pausenzeit, netto_arbeitszeit ,kommentare]     #Später prüfen, ob alte Berichte von neuen überschrieben werden
 
         
         with open(arbeitsbericht_erstellen, "w", encoding="utf-8") as datei:                    #Deserialisierung
@@ -135,3 +147,96 @@ def arbeitsberichte_anzeigen_view(request):
         berichte = {}  # Falls keine Datei vorhanden, leere Daten zurückgeben
 
     return render(request, "meine_app/arbeitsberichte_anzeigen.html", {"berichte": berichte})
+
+
+
+#hier sind die neuen Funktionen...
+
+
+def download_drucken_view(request):
+    username = request.session.get("username")
+    if not username:
+        return redirect("login")
+    
+    try:
+        with open(arbeitsbericht_erstellen, "r", encoding="utf-8") as datei:
+            berichte = json.load(datei)
+    except FileNotFoundError:
+        berichte = {}
+
+    eigene_berichte = berichte.get(username, {})
+
+    return render(request, "meine_app/download_drucken.html", {"berichte": eigene_berichte})
+
+
+def arbeitsberichte_download_drucken_view(request, bericht_id):
+    username = request.session.get("username")
+    if not username:
+        return redirect("login")
+
+    try:
+        with open(arbeitsbericht_erstellen, "r", encoding="utf-8") as datei:
+            berichte = json.load(datei)
+    except FileNotFoundError:
+        return render(request, "meine_app/arbeitsberichte_download_drucken.html", {"error": "Keine Berichte gefunden"})
+
+    eigene_berichte = berichte.get(username, {})
+    bericht = eigene_berichte.get(str(bericht_id))
+
+    if not bericht:
+        return render(request, "meine_app/arbeitsberichte_download_drucken.html", {"error": "Bericht nicht gefunden"})
+
+    return render(request, "meine_app/arbeitsberichte_download_drucken.html", {"bericht_id": bericht_id, "bericht": bericht})
+
+
+
+def bericht_download_json_view(request, bericht_id):
+    username = request.session.get("username")
+    if not username:
+        return redirect("login")
+
+    try:
+        with open(arbeitsbericht_erstellen, "r", encoding="utf-8") as datei:
+            berichte = json.load(datei)
+    except FileNotFoundError:
+        return HttpResponseBadRequest("Berichte nicht verfügbar")
+
+    bericht = berichte.get(username, {}).get(str(bericht_id))
+    if not bericht:
+        return HttpResponseBadRequest("Bericht nicht gefunden")
+
+    data = {
+        "modul": bericht[0],
+        "berichtsname": bericht[1],
+        "startzeit": bericht[2],
+        "endzeit": bericht[3],
+        "zeitdauer": bericht[4],
+        "kommentare": bericht[5],
+    }
+
+    return JsonResponse(data)
+
+
+def bericht_download_csv_view(request, bericht_id):
+    username = request.session.get("username")
+    if not username:
+        return redirect("login")
+
+    try:
+        with open(arbeitsbericht_erstellen, "r", encoding="utf-8") as datei:
+            berichte = json.load(datei)
+    except FileNotFoundError:
+        return HttpResponseBadRequest("Berichte nicht verfügbar")
+
+    bericht = berichte.get(username, {}).get(str(bericht_id))
+    if not bericht:
+        return HttpResponseBadRequest("Bericht nicht gefunden")
+
+    response = HttpResponse(content_type="text/csv")
+    response["Content-Disposition"] = f'attachment; filename="bericht_{bericht_id}.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(["Modul", "Berichtsname", "Startzeit", "Endzeit", "Zeitdauer", "Kommentare"])
+    writer.writerow(bericht)
+
+    return response
