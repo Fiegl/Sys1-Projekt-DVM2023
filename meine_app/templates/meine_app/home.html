@@ -10,30 +10,27 @@
     <header>
         <div class="header-content">
             <div class="logo">DVM-Zeiterfassung</div>
-            <form action="{% url 'logout' %}" method="post" class="logout-form">
+            <form action="{% url 'logout' %}" method="post" class="ausloggen">
                 {% csrf_token %}
-                <button type="submit" class="logout-btn">Logout</button>
+                <button type="submit" class="ausloggen_button">Logout</button>
             </form>
         </div>
     </header>
     <main>
-        <h2>Willkommen zur Eingangsseite, {{ username }}!</h2>
         <div class="grid-container">
-            <div id="kachel1" class="kachel">
-                <a href="{% url 'arbeitsbericht_erstellen' %}">neuen Arbeitsbericht anlegen</a>
-            </div>
-            <div id="kachel2" class="kachel">
-                <a href="{% url 'arbeitsberichte_anzeigen' %}">alle Berichte anzeigen</a>
-            </div>
-            <div id="kachel3" class="kachel">
-                <a href="">Download & Drucken</a>
-            </div>
-            <div id="kachel4" class="kachel">
-                <a href="">dein Profil</a>
-            </div>
+            <a href="{% url 'arbeitsbericht_erstellen' %}" class="kachel" id="kachel1">
+                neuen Arbeitsbericht anlegen
+            </a>
+            <a href="{% url 'arbeitsberichte_anzeigen' %}" class="kachel" id="kachel2">
+                alle Berichte anzeigen
+            </a>
+            <a href="{% url 'download_drucken' %}" class="kachel" id="kachel3">
+                Download & Drucken
+            </a>
+            <a href="" class="kachel" id="kachel4">
+                dein Profil
+            </a>
         </div>
     </main>
 </body>
 </html>
-
-

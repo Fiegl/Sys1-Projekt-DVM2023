@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Download & Drucken</title>
+    <link rel="stylesheet" type="text/css" href="{% static '.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Download & Drucken</h1>
+        <a href="{% url 'home' %}">Zurück zur Startseite</a>
+    </header>
+    <main>
+        <h2>Arbeitsberichte</h2>
+        <ul>
+            {% for id, details in berichte.items %}
+                <li>
+                    <a href="{% url 'arbeitsberichte_download_drucken' id%}">
+                        Bericht {{ id }}: {{ details.1 }} ({{ details.0 }})
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </main>
+</body>
+</html>

@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Bericht {{ bericht_id }}</title>
+    <link rel="stylesheet" type="text/css" href="{% static '.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Bericht-Details</h1>
+        <a href="{% url 'download_drucken' %}">zurück zur Übersicht</a>
+    </header>
+    <main>
+        <h2>Bericht {{ bericht_id }}</h2>
+        <p><strong>Modul:</strong> {{ bericht.0 }}</p>
+        <p><strong>Berichtsname:</strong> {{ bericht.1 }}</p>
+        <p><strong>Startzeit:</strong> {{ bericht.2 }}</p>
+        <p><strong>Endzeit:</strong> {{ bericht.3 }}</p>
+        <p><strong>Kommentare:</strong> {{ bericht.5 }}</p>
+        <h3>Aktionen:</h3>
+        <form action="{% url 'bericht_download_json' bericht_id %}" method="get">
+            <button type="submit">Download JSON</button>
+        </form>
+        <form action="{% url 'bericht_download_csv' bericht_id %}" method="get">
+            <button type="submit">Download CSV</button>
+        </form>
+        <button onclick="window.print()">Drucken</button>
+    </main>
+</body>
+</html>
+
