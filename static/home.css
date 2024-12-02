@@ -13,33 +13,33 @@ header {
     color: white;
     padding: 10px 0;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    position: relative; /* Ermöglicht zentriertes Logo mit Flexbox */
+    position: relative;
 }
 
 .header-content {
     display: flex;
-    justify-content: center; /* Zentriert den Logo-Text horizontal */
+    justify-content: center;
     align-items: center;
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
-    position: relative; /* Positionierung des Logout-Buttons */
+    position: relative;
 }
 
 .logo {
-    font-size: 24px; /* Etwas größere Schrift */
+    font-size: 24px;
     font-weight: bold;
 }
 
-.logout-form {
-    position: absolute; /* Positioniert den Logout-Button unabhängig vom Logo */
-    right: 20px; /* Abstand vom rechten Rand */
-    top: 50%; /* Vertikale Mitte */
-    transform: translateY(-50%); /* Exakte Zentrierung vertikal */
+.ausloggen {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
     margin: 0;
 }
 
-.logout-btn {
+.ausloggen_button {
     padding: 8px 16px;
     background-color: #ff4d4d;
     color: white;
@@ -48,7 +48,7 @@ header {
     cursor: pointer;
 }
 
-.logout-btn:hover {
+.ausloggen_button:hover {
     background-color: #00e61f;
 }
 
@@ -60,17 +60,11 @@ main {
     text-align: center;
 }
 
-h2 {
-    text-align: center;
-    font-size: 1.8em;
-    color: black;
-}
-
 .grid-container {
     display: grid;
     grid-template-columns: 1fr 1fr; /* 2 Spalten */
-    gap: 50px; /* Abstand zwischen den Kacheln */
-    justify-items: center; /* Zentriert die Kacheln */
+    gap: 50px;
+    justify-items: center;
     margin: 80px;
 }
 
@@ -80,26 +74,18 @@ h2 {
     align-items: center;
     width: 200px;
     height: 150px;
-    background-color: #d4edda;
-    border: 2px solid #28a745;
+    background-color: rgb(121, 187, 129);
+    border: 2px solid rgb(121, 187, 129);
     border-radius: 10px;
     font-size: 25px;
-    font-weight: bold;
     color: black;
+    text-align: center;
+    text-decoration: none; 
     cursor: pointer;
 }
 
 .kachel:hover {
-    background-color: #c3e6cb;
+    background-color: green;
 }
 
-.kachel a {
-    text-decoration: none; /* Entfernt Unterstreichen */
-    color: inherit; /* Beibehaltung der Kachel-Farbe */
-}
-
-.kachel a:hover, .kachel a:focus, .kachel a:active {
-    text-decoration: none; /* Kein Effekt bei Hover oder Klick */
-    color: inherit; /* Keine Farbänderung */
-}
 
