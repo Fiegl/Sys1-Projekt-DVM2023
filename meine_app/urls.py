@@ -13,3 +13,4 @@ urlpatterns = [
     path("bericht/<int:bericht_id>/", views.arbeitsberichte_download_drucken_view, name="arbeitsberichte_download_drucken"),
     path("bericht/<int:bericht_id>/json/", views.bericht_download_json_view, name="bericht_download_json"),
     path("bericht/<int:bericht_id>/csv/", views.bericht_download_csv_view, name="bericht_download_csv"),
+]
