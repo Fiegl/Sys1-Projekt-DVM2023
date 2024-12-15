@@ -1,16 +1,11 @@
 {
     "users": [
         {
-            "username": "user1",
-            "password": "hashed_password_1"
-        },
-        {
-            "username": "user2",
-            "password": "hashed_password_2"
-        },
-        {
             "username": "Stefan",
-            "password": "pbkdf2_sha256$870000$PxpwjXK6cSBytx6y3Jsw3f$sCKtA8hTUJ0CF1tSE7MF8e/E/mZjMpuZt3qmn4NJxBk="
+            "matrikelnummer": "995162",
+            "password": "pbkdf2_sha256$870000$AECk7RySGM0piKzoJAmPFY$KEkEBkAjinqucRYcvBV7d5gvJ/HXdTWyqlqqJFgxjSA=",
+            "status": "basis",
+            "zugriff": true
         }
     ]
 }
