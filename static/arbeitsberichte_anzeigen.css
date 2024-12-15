@@ -1,84 +1,84 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f2f2f2;
     margin: 0;
     padding: 0;
-    text-align: center;
+    background-color: #f4f4f4;
+}
+
+.container {
+    width: 90%;
+    margin: auto;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 header {
-    position: relative; /* Position für absolute Platzierung des Buttons */
-    background-color: #007acc;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #007acc;
     color: white;
     padding: 10px;
-    text-align: center;
-    display: flex;
-    justify-content: space-between; /* Inhalte links und rechts verteilen */
-    align-items: center;
+    border-radius: 8px;
+    margin-bottom: 20px;
 }
 
 .logo-name {
-    font-size: 24px;
+    font-size: 1.5em;
     font-weight: bold;
-    margin-left: 10px; /* Optional: Abstand zum Rand */
 }
 
-.back-button {
-    position: absolute; /* Absolute Positionierung im Header */
-    top: 50%;
-    right: 10px;
-    transform: translateY(-50%); /* Vertikale Zentrierung */
-    padding: 8px 16px;
+.profile-button {
+    display: inline-block;
+    padding: 10px 20px;
     background-color: #0099cc;
     color: white;
-    text-decoration: none; /* Entfernt Unterstreichung */
+    text-decoration: none;
     border-radius: 5px;
-    font-size: 14px;
-    font-weight: bold;
+    font-size: 16px;
+    text-align: center;
     cursor: pointer;
+    outline: none;
 }
 
-.back-button:hover {
+.profile-button:hover,
+.profile-button:focus,
+.profile-button:active {
+    color: white;
     background-color: #00e61f;
 }
 
-main {
-    padding: 20px;
-    max-width: 900px;
-    margin: auto;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-h2 {
+h1, h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.5em;
     color: #333;
 }
 
-.berichte-container {
+table {
+    width: 100%;
+    border-collapse: collapse;
     margin-top: 20px;
 }
 
-.benutzer-berichte {
-    margin-bottom: 30px;
-    padding: 15px;
-    background-color: #eef9ff;
-    border: 1px solid #007acc;
-    border-radius: 5px;
-}
-
-.benutzer-berichte h3 {
-    margin-top: 0;
-    color: #007acc;
-}
-
-.benutzer-berichte ul {
-    list-style: none;
-    padding: 0;
-}
-
-.benutzer-berichte li {
-    margin-bottom: 10px;
+table th, table td {
+    border: 1px solid #ccc;
+    padding: 10px;
     text-align: left;
-    line-height: 1.5;
+}
+
+table th {
+    background-color: #007acc;
+    color: white;
+}
+
+table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+table tr:hover {
+    background-color: #e6f7ff;
 }
