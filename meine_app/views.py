@@ -211,22 +211,32 @@ def loesche_bericht(request, bericht_id):
             if not eingeloggter_user:
                 return redirect("login")
 
-            for benutzer in daten:
-                if benutzer["name"] == eingeloggter_user:
-                    berichte = benutzer.get("berichte", {})
-                    if str(bericht_id) in berichte:
-                        del berichte[str(bericht_id)]
-                        break
+            # Filtere Berichte aus, die nicht gelöscht werden sollen
+            neue_berichte = [
+                bericht for bericht in daten.get("arbeitsberichte", [])
+                if not (bericht["id"] == int(bericht_id) and bericht["name"] == eingeloggter_user)
+            ]
+
+            # Überprüfen, ob ein Bericht gelöscht wurde
+            if len(neue_berichte) == len(daten["arbeitsberichte"]):
+                return HttpResponseBadRequest("Bericht konnte nicht gefunden oder gelöscht werden.")
+
+            daten["arbeitsberichte"] = neue_berichte
 
             with open(arbeitsbericht_erstellen, "w", encoding="utf-8") as file:
                 json.dump(daten, file, indent=4)
 
         except FileNotFoundError:
             return HttpResponseBadRequest("Datei nicht gefunden.")
+        except json.JSONDecodeError:
+            return HttpResponseBadRequest("Fehlerhafte JSON-Datei.")
+        except KeyError:
+            return HttpResponseBadRequest("Fehler in der JSON-Struktur.")
 
         return redirect("arbeitsberichte_anzeigen")
 
     return HttpResponseBadRequest("Ungültige Anfrage.")
+
 
 
 def arbeitsberichte_download_drucken_view(request):
@@ -256,59 +266,90 @@ def arbeitsberichte_download_drucken_view(request):
 
 class BerichtDownloadView(View):
     def bericht_herunterladen(self, bericht_id):
+        """
+        Diese Methode sucht nach einem Bericht mit der gegebenen ID in der JSON-Datei.
+        """
         try:
             with open(arbeitsbericht_erstellen, "r", encoding="utf-8") as datei:
                 daten = json.load(datei)
-            for benutzer in daten:
-                bericht = benutzer["berichte"].get(str(bericht_id))
-                if bericht:
+
+            # Bericht mit der entsprechenden ID suchen
+            for bericht in daten.get("arbeitsberichte", []):  # Iteriere über die flache Liste
+                if bericht["id"] == int(bericht_id):  # ID vergleichen
                     return bericht
+
         except FileNotFoundError:
-            return None
-        return None
+            return None  # Datei nicht gefunden
+        except json.JSONDecodeError:
+            return None  # Fehlerhafte JSON-Struktur
+        except ValueError:
+            return None  # Ungültige ID
+        return None  # Kein Bericht gefunden
 
     def erstelle_json(self, bericht_id):
+        """
+        Erstellt eine JSON-Datei für den Bericht.
+        """
         bericht = self.bericht_herunterladen(bericht_id)
         if not bericht:
             return HttpResponse("Bericht nicht gefunden", status=404)
 
-        json_daten = {
-            "id": bericht_id,
-            "modul": bericht[0],
-            "berichtsname": bericht[1],
-            "startzeit": bericht[2],
-            "endzeit": bericht[3],
-            "pausenzeit": bericht[4],
-            "arbeitszeit": bericht[5],
-            "kommentare": bericht[6],
-        }
-
-        response = HttpResponse(json.dumps(json_daten, indent=4), content_type="application/json")
-        response["Content-Disposition"] = f'attachment; filename="bericht_{bericht_id}.json"'
+        response = HttpResponse(json.dumps(bericht, indent=4), content_type="application/json")
+        response["Content-Disposition"] = f'attachment; filename="bericht_{bericht["id"]}.json"'
         return response
 
-    def erstelle_csv(self, bericht_id, bericht):
+    def erstelle_csv(self, bericht_id):
+        """
+        Erstellt eine CSV-Datei für den Bericht.
+        """
+        bericht = self.bericht_herunterladen(bericht_id)
+        if not bericht:
+            return HttpResponse("Bericht nicht gefunden", status=404)
+
         response = HttpResponse(content_type="text/csv")
-        response["Content-Disposition"] = f'attachment; filename="bericht_{bericht_id}.csv"'
+        response["Content-Disposition"] = f'attachment; filename="bericht_{bericht["id"]}.csv"'
         writer = csv.writer(response)
-        writer.writerow(["ID", "Modul", "Berichtsname", "Startzeit", "Endzeit", "Kommentare"])
-        writer.writerow([bericht_id] + bericht)
+        writer.writerow(["ID", "Name", "Matrikelnummer", "Modul", "Berichtsname", "Startzeit", "Endzeit", "Pausenzeit", "Kommentare"])
+        writer.writerow([
+            bericht["id"],
+            bericht["name"],
+            bericht["matrikelnummer"],
+            bericht["modul"],
+            bericht["berichtsname"],
+            bericht["startzeit"],
+            bericht["endzeit"],
+            bericht["pausenzeit"],
+            bericht["kommentare"]
+        ])
         return response
 
-    def erstelle_xml(self, bericht_id, bericht):
+    def erstelle_xml(self, bericht_id):
+        """
+        Erstellt eine XML-Datei für den Bericht.
+        """
+        bericht = self.bericht_herunterladen(bericht_id)
+        if not bericht:
+            return HttpResponse("Bericht nicht gefunden", status=404)
+
         root = ET.Element("Arbeitsbericht")
-        ET.SubElement(root, "ID").text = str(bericht_id)
-        ET.SubElement(root, "Modul").text = bericht[0]
-        ET.SubElement(root, "Berichtsname").text = bericht[1]
-        ET.SubElement(root, "Startzeit").text = bericht[2]
-        ET.SubElement(root, "Endzeit").text = bericht[3]
-        ET.SubElement(root, "Kommentare").text = bericht[6]
+        ET.SubElement(root, "ID").text = str(bericht["id"])
+        ET.SubElement(root, "Name").text = bericht["name"]
+        ET.SubElement(root, "Matrikelnummer").text = str(bericht["matrikelnummer"])
+        ET.SubElement(root, "Modul").text = bericht["modul"]
+        ET.SubElement(root, "Berichtsname").text = bericht["berichtsname"]
+        ET.SubElement(root, "Startzeit").text = bericht["startzeit"]
+        ET.SubElement(root, "Endzeit").text = bericht["endzeit"]
+        ET.SubElement(root, "Pausenzeit").text = str(bericht["pausenzeit"])
+        ET.SubElement(root, "Kommentare").text = bericht["kommentare"]
         xml_str = ET.tostring(root, encoding="unicode")
         response = HttpResponse(xml_str, content_type="application/xml")
-        response["Content-Disposition"] = f'attachment; filename="bericht_{bericht_id}.xml"'
+        response["Content-Disposition"] = f'attachment; filename="bericht_{bericht["id"]}.xml"'
         return response
 
     def get(self, request, bericht_id, format):
+        """
+        Verarbeitet die GET-Anfrage und gibt den Bericht im gewünschten Format zurück.
+        """
         bericht = self.bericht_herunterladen(bericht_id)
         if not bericht:
             return HttpResponse("Bericht nicht gefunden", status=404)
@@ -316,11 +357,12 @@ class BerichtDownloadView(View):
         if format == "json":
             return self.erstelle_json(bericht_id)
         elif format == "csv":
-            return self.erstelle_csv(bericht_id, bericht)
+            return self.erstelle_csv(bericht_id)
         elif format == "xml":
-            return self.erstelle_xml(bericht_id, bericht)
+            return self.erstelle_xml(bericht_id)
         else:
             return HttpResponse("Ungültiges Format", status=400)
+
 
 
 def bericht_hochladen(request):
