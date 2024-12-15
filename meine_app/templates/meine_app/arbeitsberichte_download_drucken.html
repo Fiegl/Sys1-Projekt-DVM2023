@@ -3,29 +3,62 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Bericht {{ bericht_id }}</title>
-    <link rel="stylesheet" type="text/css" href="{% static '.css' %}">
+    <title>Download und Drucken</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'arbeitsberichte_download_drucken.css' %}">
 </head>
 <body>
     <header>
-        <h1>Bericht-Details</h1>
-        <a href="{% url 'download_drucken' %}">zurück zur Übersicht</a>
+        <div class="logo-name">DVM-Zeiterfassung</div>
+        <a href="{% url 'home' %}" class="profile-button">Zur Startseite</a>
     </header>
     <main>
-        <h2>Bericht {{ bericht_id }}</h2>
-        <p><strong>Modul:</strong> {{ bericht.0 }}</p>
-        <p><strong>Berichtsname:</strong> {{ bericht.1 }}</p>
-        <p><strong>Startzeit:</strong> {{ bericht.2 }}</p>
-        <p><strong>Endzeit:</strong> {{ bericht.3 }}</p>
-        <p><strong>Kommentare:</strong> {{ bericht.5 }}</p>
-        <h3>Aktionen:</h3>
-        <form action="{% url 'bericht_download_json' bericht_id %}" method="get">
-            <button type="submit">Download JSON</button>
-        </form>
-        <form action="{% url 'bericht_download_csv' bericht_id %}" method="get">
-            <button type="submit">Download CSV</button>
-        </form>
-        <button onclick="window.print()">Drucken</button>
+        <h2>Download und Drucken</h2>
+        <div class="container">
+            {% if berichte %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Berichtsname</th>
+                        <th>Herunterladen</th>
+                        <th>JSON-Datei überschreiben</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bericht in berichte %}
+                    <tr>
+                        <td>{{ bericht.id }}</td>
+                        <td>{{ bericht.berichtsname }}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <!-- Download-Buttons -->
+                                <form method="get" action="{% url 'bericht_herunterladen' 'json' bericht.id %}">
+                                    <button type="submit" class="action-button">JSON</button>
+                                </form>
+                                <form method="get" action="{% url 'bericht_herunterladen' 'csv' bericht.id %}">
+                                    <button type="submit" class="action-button">CSV</button>
+                                </form>
+                                <form method="get" action="{% url 'bericht_herunterladen' 'xml' bericht.id %}">
+                                    <button type="submit" class="action-button">XML</button>
+                                </form>
+                            </div>
+                        </td>
+                        <td>
+                            <!-- Upload-Formular -->
+                            <form method="post" enctype="multipart/form-data" action="{% url 'bericht_hochladen' %}">
+                                {% csrf_token %}
+                                <input type="file" name="upload_file" class="upload-input" accept=".json" required>
+                                <button type="submit" class="action-button upload-button">Upload</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>Es wurden noch keine Arbeitsberichte erstellt.</p>
+            {% endif %}
+        </div>
     </main>
 </body>
 </html>

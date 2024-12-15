@@ -17,6 +17,7 @@
         <form method="post">
             {% csrf_token %}
             <input type="text" name="username" placeholder="Benutzername" required>
+            <input type="text" name="matrikelnummer" placeholder="Matrikelnummer" required>
             <input type="password" name="password" placeholder="Passwort" required>
             <input type="hidden" name="status" value="basis">
             <button type="submit">Registrieren</button>
@@ -28,4 +29,3 @@
     
 </body>
 </html>
-

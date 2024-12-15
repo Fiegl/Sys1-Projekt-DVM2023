@@ -3,39 +3,54 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>alle Arbeitsberichte</title>
+    <title>Arbeitsberichte anzeigen</title>
     <link rel="stylesheet" type="text/css" href="{% static 'arbeitsberichte_anzeigen.css' %}">
 </head>
 <body>
     <header>
         <div class="logo-name">DVM-Zeiterfassung</div>
-        <a href="{% url 'home' %}" class="back-button">zur Startseite</a>
+        <a href="{% url 'home' %}" class="profile-button">Zur Startseite</a>
     </header>
     <main>
-        <h2>Alle Arbeitsberichte</h2>
-        <div class="berichte-container">
+        <h2>Deine Arbeitsberichte</h2>
+        <div class="container">
             {% if berichte %}
-                {% for benutzer, berichte_dict in berichte.items %}
-                    <div class="benutzer-berichte">
-                        <h3>Benutzer: {{ benutzer }}</h3>
-                        <ul>
-                            {% for id, details in berichte_dict.items %}
-                                <li>
-                                    <strong>Bericht-ID:</strong> {{ id }}<br>
-                                    <strong>Modul:</strong> {{ details.0 }}<br>
-                                    <strong>Berichtsname:</strong> {{ details.1 }}<br>
-                                    <strong>Startzeit:</strong> {{ details.2 }}<br>
-                                    <strong>Endzeit:</strong> {{ details.3 }}<br>
-                                    <strong>Kommentare:</strong> {{ details.4 }}<br>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                {% endfor %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Modul</th>
+                        <th>Berichtsname</th>
+                        <th>Startzeit</th>
+                        <th>Endzeit</th>
+                        <th>Kommentare</th>
+                        <th>Aktionen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bericht in berichte %}
+                    <tr>
+                        <td>{{ bericht.id }}</td>
+                        <td>{{ bericht.modul }}</td>
+                        <td>{{ bericht.berichtsname }}</td>
+                        <td>{{ bericht.startzeit }}</td>
+                        <td>{{ bericht.endzeit }}</td>
+                        <td>{{ bericht.kommentare }}</td>
+                        <td>
+                            <form method="post" action="{% url 'bericht_loeschen' bericht.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="delete-button">Löschen</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
             {% else %}
-                <p>Es wurden noch keine Arbeitsberichte erstellt.</p>
+            <p>Es wurden noch keine Arbeitsberichte erstellt.</p>
             {% endif %}
         </div>
     </main>
 </body>
 </html>
+

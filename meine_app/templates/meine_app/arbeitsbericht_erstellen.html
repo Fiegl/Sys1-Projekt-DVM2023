@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arbeitsbericht anlegen</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'arbeitsbericht_erstellen.css' %}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-name">DVM-Zeiterfassung</div>
+            <a href="{% url 'home' %}" class="profile-button">zur Start-Seite</a>
+        </header>
+        <main>
+            <h1>Neuen Arbeitsbericht anlegen</h1>
+            <form method="post" action="{% url 'arbeitsbericht_speichern' %}">
+                {% csrf_token %}                                                    <!--CSRF-Token muss innerhalb des Form-Elements sein wie auch bei login und register-->
+                <div class="form-group">
+                    <label for="startzeit">Startzeit</label>
+                    <input type="datetime-local" id="startzeit" name="startzeit">
+                </div>
+                <div class="form-group">
+                    <label for="endzeit">Endzeit</label>
+                    <input type="datetime-local" id="endzeit" name="endzeit">
+                </div>
+		        <div>
+		            <label for="pause"> Pausenzeiten hier aufsummiert eintragen in ganzen Minuten: </label>
+  		            <input type="number" id="pause" name="breaktime" min="0" step="1" value="0">
+		        </div>
+                <div class="form-group">
+                    <label for="modul">Modul auswählen</label>
+                    <select id="modul" name="modul">
+                        <option value="Auswahl" disabled selected>Bitte auswählen</option>
+                        {% for key, value in module.items %}
+                            <option value="{{ key }}">{{ key }} {{ value }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="berichtsname">Berichtsname</label>
+                    <input type="text" id="berichtsname" name="berichtsname" placeholder="Berichtsname eingeben">
+                </div>
+                <div class="form-group">
+                    <label for="kommentare">Arbeitsbericht / Kommentare</label>
+                    <textarea id="kommentare" name="kommentare" rows="5" placeholder="Kommentare eingeben"></textarea>
+                </div>
+                <button type="submit" class="save-button">Speichern</button>
+            </form>
+        </main>
+    </div>
+</body>
+</html>
