@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Profilseite</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Profilseite ADMIN</h1>
+    <br>
+    <table>
+        <thead>
+            <tr>
+                <th colspan="2">Anfragen für Status-Upgrades</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Benutzername</th>
+                <th>Matrikelnummer</th>
+            </tr>
+            <tr>
+                <th></th>
+                <th></th>
+            </tr>  
+        </tbody>
+    </table>    
+ 
+    <hr>
+    <br>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Benutzername</th>
+                <th>Matrikelnummer</th>
+                <th>Status</th>
+                <th>Zugriff</th>
+                <th>Status Upgrade/Downgrade</th>
+                <th>Benutzer Sperren/Entsperren</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for benutzer in benutzer_daten %}
+            <tr>
+                <td>{{ benutzer.username }}</td>
+                <td>{{ benutzer.matrikelnummer }}</td>
+                <td>{{ benutzer.status }}</td>
+                <td>{{ benutzer.zugriff }}</td>
+                <th><button>Upgrade Status</button><button>Downgrade Status</button></th>
+                <th><button>Benutzer sperren</button><button>Benutzer entsperren</button></th>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>     
