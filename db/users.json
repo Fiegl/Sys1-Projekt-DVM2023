@@ -6,6 +6,20 @@
             "password": "pbkdf2_sha256$870000$AECk7RySGM0piKzoJAmPFY$KEkEBkAjinqucRYcvBV7d5gvJ/HXdTWyqlqqJFgxjSA=",
             "status": "basis",
             "zugriff": true
+        },
+        {
+            "username": "patrickTest",
+            "matrikelnummer": "999111",
+            "password": "pbkdf2_sha256$870000$P10vuQgjGLy7yvksnclahV$QrmtiZ8fG6/BtVZmLm0zVcUAG2MkLlgvlOmVbbyS9Wo=",
+            "status": "admin",
+            "zugriff": true
+        },
+        {
+            "username": "TestuserMaxMustermann",
+            "matrikelnummer": "145896",
+            "password": "pbkdf2_sha256$870000$jC7mhdpeqRbFfeVY3Zk7Hu$lFWWJAGOiI6o8V2OuqEhfvtmGEldR0GpVAFMBv2UWBw=",
+            "status": "basis",
+            "zugriff": true
         }
     ]
 }
