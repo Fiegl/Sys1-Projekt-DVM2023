@@ -13,7 +13,7 @@
             <form action="{% url 'logout' %}" method="post" class="ausloggen">
                 {% csrf_token %}
                 <button type="submit" class="ausloggen_button">Logout</button>
-            </form>
+            </form>        
         </div>
     </header>
     <main>
@@ -24,13 +24,38 @@
             <a href="{% url 'arbeitsberichte_anzeigen' %}" class="kachel" id="kachel2">
                 alle Berichte anzeigen
             </a>
-            <a href="{% url 'arbeitsberichte_download_drucken' %}" class="kachel" id="kachel3">
+            <a href="{% url 'arbeitsberichte_download_drucken' %}" class="kachel" id="kachel3" onclick="checkStatus(event, this.href)">
                 Download & Drucken
             </a>
-            <a href="" class="kachel" id="kachel4">
+            <a href="{% url 'profile_page' %}" class="kachel" id="kachel4">
                 dein Profil
             </a>
         </div>
     </main>
+    <div class="eigener-alert" id="meinAlert">
+        <p>&#9888;&#65039;  Diese Funktion steht nur VIP-Benutzern zur Verfügung!</p>
+        <p>&#10145;&#65039;  Beantrage in deinem Profil ein Upgrade deines Status!</p>
+        <button onclick="closeAlert()">OK</button>
+    </div>
+    <script>
+        const loggedInUser = "{{ statusUser }}";
+
+        function checkStatus(event, url) {
+            event.preventDefault();    // Verhindert das Standardverhalten des Links
+
+            if (loggedInUser === 'vip' || loggedInUser === 'admin') {
+                window.location.href = url; // Weiterleitung zur ursprünglich abgefangenen URL
+            } else {
+                showAlert();
+            }
+        }
+        function showAlert() {
+            document.getElementById('meinAlert').style.display = 'block';
+        }
+
+        function closeAlert() {
+            document.getElementById('meinAlert').style.display = 'none';
+        }
+    </script>
 </body>
 </html>
