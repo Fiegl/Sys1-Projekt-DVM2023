@@ -87,3 +87,31 @@ main {
 .kachel:hover {
     background-color: green;
 }
+
+
+.eigener-alert {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: lightgreen;
+    color: darkblue;
+    font-weight: bold;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    border: darkblue 2px;
+    border-left: darkblue 15px;
+    border-style: groove;
+}
+.eigener-alert button {
+    background-color: white;
+    color: green;
+    border: none;
+    padding: 16px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+}
