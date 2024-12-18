@@ -17,5 +17,6 @@ urlpatterns = [
     path('arbeitsberichte_download_drucken/', views.arbeitsberichte_download_drucken_view, name='arbeitsberichte_download_drucken'),
     path('download/<str:format>/<int:bericht_id>/', BerichtDownloadView.as_view(), name='bericht_herunterladen'),
     path('bericht_hochladen/', views.bericht_hochladen, name='bericht_hochladen'),
-    
+
+    path('profile_page/', views.profile_page_view, name='profile_page'),    
 ]
