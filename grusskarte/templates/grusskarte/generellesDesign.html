@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="de">
+
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <link rel="stylesheet" type="text/css" href="">
+    </head>
+
+    <body>
+        <h1>Alles Gute zu {{occasion}} </h1>
+        <p>{{ anrede}}<br>
+            zu {{ occasion }}... wünschen wir alles Gute!</p>
+            {% block extracontent %}
+            <p>(no extra content!)</p>
+            {% endblock %}
+    </body>
+
+</html>
