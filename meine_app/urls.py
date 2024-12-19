@@ -17,8 +17,5 @@ urlpatterns = [
     path('arbeitsberichte_herunterladen/<str:format>/<str:bericht_id>/', views.bericht_herunterladen, name='bericht_herunterladen'),
 
 
-    path('profile_page/', views.profile_page_view, name='profile_page'),    
-
-    path('beispiel/', views.beispiel_view, name='beispiel'),
-    
+    path('profile_page/', views.profile_page_view, name='profile_page'),        
 ]
