@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views
-from .views import BerichtDownloadView  # Import der Klassenbasierten View für Downloads
 
 urlpatterns = [
     path('', views.login_view, name='login'),
@@ -13,8 +12,13 @@ urlpatterns = [
 
     path('arbeitsberichte_anzeigen/', views.arbeitsberichte_anzeigen_view, name='arbeitsberichte_anzeigen'),
     
+   
     path('arbeitsberichte_download_drucken/', views.arbeitsberichte_download_drucken_view, name='arbeitsberichte_download_drucken'),
     path('arbeitsberichte_herunterladen/<str:format>/<str:bericht_id>/', views.bericht_herunterladen, name='bericht_herunterladen'),
 
-    path('profile_page/', views.profile_page_view, name='profile_page'),  
+
+    path('profile_page/', views.profile_page_view, name='profile_page'),    
+
+    path('beispiel/', views.beispiel_view, name='beispiel'),
+    
 ]
