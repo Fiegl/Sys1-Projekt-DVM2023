@@ -1,4 +1,5 @@
-import json, csv, uuid
+import json, csv
+import uuid
 import xml.etree.ElementTree as ET
 from django.shortcuts import render, redirect
 from django.views import View
@@ -72,6 +73,7 @@ def register_view(request):
 
         # Automatisch einloggen und zur Startseite weiterleiten
         request.session["username"] = username
+        request.session["matrikelnummer"] = matrikelnummer
         return redirect("home")
 
     # Für GET-Anfragen wird das Registrierungsformular angezeigt
@@ -93,6 +95,7 @@ def login_view(request):
         for user in users:
             if user["username"] == username and check_password(password, user["password"]) and user["zugriff"]:
                 request.session["username"] = username
+                request.session["matrikelnummer"] = user["matrikelnummer"]
                 return redirect("home")
 
         return render(request, "meine_app/login.html", {"error": "Ungültige Anmeldedaten oder gesperrter Account!"})
@@ -101,9 +104,36 @@ def login_view(request):
 
 def home_view(request):
     username = request.session.get("username")
+    
     if not username:
-        return redirect("login")
-    return render(request, "meine_app/home.html", {"username": username})
+        return redirect("login")  # Falls nicht eingeloggt, zur Login-Seite
+
+    try:
+        with open(registrierte_benutzer, "r", encoding="utf-8") as file:
+            userDB = json.load(file)
+            alleUser = userDB.get("users", [])
+            for angemeldeterUser in alleUser:
+                if angemeldeterUser["username"] == username:
+                    statusAngemeldeterUser = angemeldeterUser["status"]
+                    matrikelnummerAngemeldeterUser = angemeldeterUser["matrikelnummer"]
+                    zugriffAngemeldeterUser = angemeldeterUser["zugriff"]
+                    break  # Schleife beenden, wenn der Benutzer gefunden wurde
+            else:
+                statusAngemeldeterUser = None  # Falls der Benutzer nicht gefunden wurde
+    
+    except FileNotFoundError:
+        return render(request, "meine_app/login.html", {"error": "Keine Benutzer registriert"})
+    except json.JSONDecodeError:
+        return render(request, "meine_app/login.html", {"error": "Fehler beim Laden der Benutzerdatei"})
+
+    context = {
+        "username": username,
+        "matrikelnummer": matrikelnummerAngemeldeterUser,
+        "statusUser": statusAngemeldeterUser,
+        "zugriffUser": zugriffAngemeldeterUser
+    }
+
+    return render(request, "meine_app/home.html", context)
 
 
 def logout_view(request):
@@ -121,21 +151,34 @@ def arbeitsbericht_erstellen_view(request):
 
 
 def arbeitsbericht_speichern(request):
+    neue_uuid = str(uuid.uuid4())  # UUID in String umwandeln
     if request.method == "POST":
         benutzer = request.session.get("username")  # Aktueller Benutzer
+        matrikelnummer = request.session.get("matrikelnummer")
         modul = request.POST.get("modul")
         berichtsname = request.POST.get("berichtsname")
         startzeit = request.POST.get("startzeit")
         endzeit = request.POST.get("endzeit")
-        pausenzeit = request.POST.get("breaktime", "0")  # Optional, Standardwert 0
+        breaktime = request.POST.get("breaktime", 0)  # Optional, Standardwert 0
         kommentare = request.POST.get("kommentare", "")
 
         # Matrikelnummer aus der Benutzerdatei abrufen
         try:
             with open(registrierte_benutzer, "r", encoding="utf-8") as file:
-                benutzer_daten = json.load(file)
-            user_info = next((user for user in benutzer_daten["users"] if user["username"] == benutzer), None)
-            matrikelnummer = user_info["matrikelnummer"] if user_info else None
+                benutzer_daten = json.load(file)        
+            # Suche nach dem Benutzer in den Benutzerdaten
+            user_info = None
+            for user in benutzer_daten["users"]:
+                if user["username"] == benutzer:
+                    user_info = user
+                    break
+            # Hole die Matrikelnummer des Benutzers, falls vorhanden
+            if user_info:
+                matrikelnummer = user_info["matrikelnummer"]
+            else:
+                matrikelnummer = None
+
+        
         except (FileNotFoundError, KeyError):
             return HttpResponseBadRequest("Fehler beim Abrufen der Matrikelnummer.")
 
@@ -148,34 +191,43 @@ def arbeitsbericht_speichern(request):
                 daten = json.load(file)  # Vorhandene JSON-Daten laden
         except FileNotFoundError:
             daten = {"arbeitsberichte": []}  # Initiale Struktur, falls Datei nicht existiert
+        except json.JSONDecodeError:
+            return HttpResponseBadRequest("Fehler beim Laden der Arbeitsberichte-Datei.")
 
-        # Neue ID für den Bericht berechnen
-        neue_id = max((bericht["id"] for bericht in daten["arbeitsberichte"]), default=0) + 1
+        timeStart = datetime.fromisoformat(startzeit)  # Zeitdifferenz zwischen Start und Endzeit wird direkt hier ausgerechnet und mit in die JSON gespeichert.
+        timeEnd = datetime.fromisoformat(endzeit)
+        deltaRaw = timeEnd - timeStart
+        zeitdauer = int(deltaRaw.total_seconds() / 60)  # Aufruf Methode total_seconds von date-time-Modul
+        pausenzeit = int(breaktime)
+        netto_arbeitszeit = zeitdauer - pausenzeit
 
         # Neuen Bericht erstellen
         neuer_bericht = {
-            "name": benutzer,
+            "benutzername": benutzer,
             "matrikelnummer": matrikelnummer,
-            "id": neue_id,
+            "id": neue_uuid,
             "modul": modul,
             "berichtsname": berichtsname,
             "startzeit": startzeit,
             "endzeit": endzeit,
             "pausenzeit": pausenzeit,
-            "kommentare": kommentare,
+            "nettoarbeitszeit": netto_arbeitszeit,
+            "kommentare": kommentare            
         }
 
         # Neuen Bericht hinzufügen
         daten["arbeitsberichte"].append(neuer_bericht)
 
         # Aktualisierte JSON speichern
-        with open(arbeitsbericht_erstellen, "w", encoding="utf-8") as file:
-            json.dump(daten, file, indent=4)
+        try:
+            with open(arbeitsbericht_erstellen, "w", encoding="utf-8") as file:
+                json.dump(daten, file, indent=4)
+        except OSError:
+            return HttpResponseBadRequest("Fehler beim Speichern der Arbeitsberichte-Datei.")
 
         return redirect("home")  # Nach dem Speichern zur Startseite weiterleiten
 
     return render(request, "meine_app/Arbeitsbericht_erstellen.html")
-
 
 
 def arbeitsberichte_anzeigen_view(request):
@@ -395,3 +447,15 @@ def bericht_hochladen(request):
         return redirect("arbeitsberichte_download_drucken")
 
     return HttpResponseBadRequest("Ungültige Anfrage.")
+
+
+def profile_page_view(request):
+    try:
+        with open(registrierte_benutzer, "r", encoding="utf-8") as file:
+            benutzer_daten = json.load(file)  # JSON-Daten laden
+    except FileNotFoundError:
+        benutzer_daten = {"users": []}  # Leere Liste, falls Datei nicht existiert
+    except json.JSONDecodeError:
+        return HttpResponseBadRequest("Fehler beim Laden der Benutzerdaten-Datei.")
+
+    return render(request, "meine_app/profile_page.html", {"benutzer_daten": benutzer_daten["users"]})
