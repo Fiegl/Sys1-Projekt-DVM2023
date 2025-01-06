@@ -17,5 +17,13 @@ urlpatterns = [
     path('arbeitsberichte_herunterladen/<str:format>/<str:bericht_id>/', views.bericht_herunterladen, name='bericht_herunterladen'),
 
 
-    path('profile_page/', views.profile_page_view, name='profile_page'),        
+    path('profile_page_admin/', views.profile_page_view, name='profile_page_admin'),
+    path('loesche_anfrage/', views.loesche_anfrage, name='loesche_anfrage'),
+    path('status_upgrade/', views.status_upgrade, name='status_upgrade'),
+    path('status_downgrade/', views.status_downgrade, name='status_downgrade'),
+    path('benutzer_sperren/', views.benutzer_sperren, name='benutzer_sperren'),
+    path('benutzer_entsperren/', views.benutzer_entsperren, name='benutzer_entsperren'),
+
+    path('profile_page_user/', views.profile_page_user_view, name='profile_page_user'),
+    path('status_upgrade_anfrage/', views.status_upgrade_anfrage, name='status_upgrade_anfrage'),       
 ]
