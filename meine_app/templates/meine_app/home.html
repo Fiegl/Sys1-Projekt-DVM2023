@@ -27,7 +27,7 @@
             <a href="{% url 'arbeitsberichte_download_drucken' %}" class="kachel" id="kachel3" onclick="checkStatus(event, this.href)">
                 Download & Drucken
             </a>
-            <a href="{% url 'profile_page' %}" class="kachel" id="kachel4">
+            <a href="#" class="kachel" id="kachel4" onclick="redirectToProfile()">
                 dein Profil
             </a>
         </div>
@@ -52,9 +52,16 @@
         function showAlert() {
             document.getElementById('meinAlert').style.display = 'block';
         }
-
         function closeAlert() {
             document.getElementById('meinAlert').style.display = 'none';
+        }
+        
+        function redirectToProfile() {
+            if (loggedInUser === 'admin') {
+                window.location.href = "{% url 'profile_page_admin' %}";
+            } else {
+                window.location.href = "{% url 'profile_page_user' %}";
+            }
         }
     </script>
 </body>
