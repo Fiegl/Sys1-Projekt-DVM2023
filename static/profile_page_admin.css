@@ -1,0 +1,74 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #007acc;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.logo-name {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.profile-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #0099cc;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    text-align: center;
+    cursor: pointer;
+    outline: none;
+}
+
+.profile-button:hover,
+.profile-button:focus,
+.profile-button:active {
+    color: white;
+    background-color: #00e61f;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+th, td {
+    border: 1px solid black;
+    padding: 10px;
+    text-align: center;
+}
+th {
+    background-color: #f2f2f2;
+}
+.profile-container {
+    display: flex;
+    align-items: center;
+}
+.profile-pic {
+    width: 100px; 
+    height: 100px; 
+    background-color: rgb(100, 226, 243); 
+    color: black; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    font-size: 50px; 
+    font-weight: bold; 
+    border-radius: 10px; 
+    margin-right: 15px;          /* Abstand zwischen Profilbild und Benutzername */
+}
+.username {
+    font-size: 40px;             /* Schriftgröße des Benutzernamens neben dem Bild */
+    font-weight: bold;
+}
