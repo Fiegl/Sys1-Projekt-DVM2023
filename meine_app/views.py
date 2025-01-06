@@ -12,6 +12,7 @@ import xml.etree.ElementTree as ET
 registrierte_benutzer = "/var/www/buchungssystem/db/users.json"
 arbeitsbericht_erstellen = "/var/www/buchungssystem/db/arbeitsberichte.json"
 datenbank_module = "/var/www/buchungssystem/db/module.json"
+anfragen_datei = "/var/www/buchungssystem/db/anfragen.json"
 
 
 #Hier die Funktionen für Registrieren, Ein- und Auslogen
@@ -347,11 +348,14 @@ def bericht_herunterladen(request, format, bericht_id):
 ##################################################################################################
 
 
-#Hier die Funktionen für die Kacheln dein_Profil
+#Hier die Funktionen für die Kacheln dein_Profil_admin, also Admin-Profilseite
 ##################################################################################################
 
 
 def profile_page_view(request):
+    eingeloggter_user = request.session.get("username")
+    user_initiale = eingeloggter_user[0].upper()
+    
     try:
         with open(registrierte_benutzer, "r", encoding="utf-8") as file:
             benutzer_daten = json.load(file)  # JSON-Daten laden
@@ -359,5 +363,184 @@ def profile_page_view(request):
         benutzer_daten = {"users": []}  # Leere Liste, falls Datei nicht existiert
     except json.JSONDecodeError:
         return HttpResponseBadRequest("Fehler beim Laden der Benutzerdaten-Datei.")
+    
+    try:
+        with open(anfragen_datei, "r", encoding="utf-8") as file:
+            anfrage_daten = json.load(file)  # JSON-Daten laden
+    except FileNotFoundError:
+        anfrage_daten = {"anfragen": []}  # Leere Liste, falls Datei nicht existiert
+    except json.JSONDecodeError:
+        return HttpResponseBadRequest("Fehler beim Laden der Anfragen-Datei.")
 
-    return render(request, "meine_app/profile_page.html", {"benutzer_daten": benutzer_daten["users"]})
+    allerUebergebenerInhalt = {
+        "benutzer_daten": benutzer_daten["users"],
+        "anfrage_daten": anfrage_daten["anfragen"],
+        "user_initiale": user_initiale,
+        "eingeloggter_user": eingeloggter_user
+    }
+
+    return render(request, "meine_app/profile_page_admin.html", allerUebergebenerInhalt)
+
+
+def loesche_anfrage(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        matrikelnummer = request.POST.get("matrikelnummer")
+
+        try:
+            with open(registrierte_benutzer, "r", encoding="utf-8") as file:
+                benutzer_daten = json.load(file)
+            for user in benutzer_daten["users"]:
+                if user["username"] == username:
+                    if user["status"] == "basis":
+                        user["status"] = "vip"
+                    elif user["status"] == "vip":
+                        user["status"] = "admin"
+                    break
+            with open(registrierte_benutzer, "w", encoding="utf-8") as file:
+                json.dump(benutzer_daten, file, indent=4)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return HttpResponseBadRequest("Fehler beim Aktualisieren der Benutzerdaten.")
+
+        try:
+            with open(anfragen_datei, "r", encoding="utf-8") as file:
+                daten = json.load(file)
+        except FileNotFoundError:
+            daten = {"anfragen": []}
+        except json.JSONDecodeError:
+            return HttpResponseBadRequest("Fehler beim Laden der Anfragen-Datei.")
+
+        daten["anfragen"] = [anfrage for anfrage in daten["anfragen"] if not (anfrage["username"] == username and anfrage["matrikelnummer"] == matrikelnummer)]
+
+        try:
+            with open(anfragen_datei, "w", encoding="utf-8") as file:
+                json.dump(daten, file, indent=4)
+        except IOError:
+            return HttpResponseBadRequest("Fehler beim Speichern der Anfragen-Datei.")
+
+        return redirect("profile_page_admin")
+    return HttpResponseBadRequest("Ungültige Anfrage.")
+
+
+def status_upgrade(request):
+    if request.method == "POST":
+        benutzername = request.POST.get("benutzername")
+        try:
+            with open(registrierte_benutzer, "r", encoding="utf-8") as file:
+                benutzer_daten = json.load(file)
+            for user in benutzer_daten["users"]:
+                if user["username"] == benutzername:
+                    if user["status"] == "basis":
+                        user["status"] = "vip"
+                    elif user["status"] == "vip":
+                        user["status"] = "admin"
+                    break
+            with open(registrierte_benutzer, "w", encoding="utf-8") as file:
+                json.dump(benutzer_daten, file, indent=4)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return HttpResponseBadRequest("Fehler beim Aktualisieren der Benutzerdaten.")
+    return redirect("profile_page_admin")
+
+def status_downgrade(request):
+    if request.method == "POST":
+        benutzername = request.POST.get("benutzername")
+        try:
+            with open(registrierte_benutzer, "r", encoding="utf-8") as file:
+                benutzer_daten = json.load(file)
+            for user in benutzer_daten["users"]:
+                if user["username"] == benutzername:
+                    if user["status"] == "admin":
+                        user["status"] = "vip"
+                    elif user["status"] == "vip":
+                        user["status"] = "basis"
+                    break
+            with open(registrierte_benutzer, "w", encoding="utf-8") as file:
+                json.dump(benutzer_daten, file, indent=4)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return HttpResponseBadRequest("Fehler beim Aktualisieren der Benutzerdaten.")
+    return redirect("profile_page_admin")
+
+def benutzer_sperren(request):
+    if request.method == "POST":
+        benutzername = request.POST.get("benutzername")
+        try:
+            with open(registrierte_benutzer, "r", encoding="utf-8") as file:
+                benutzer_daten = json.load(file)
+            for user in benutzer_daten["users"]:
+                if user["username"] == benutzername:
+                    user["zugriff"] = False
+                    break
+            with open(registrierte_benutzer, "w", encoding="utf-8") as file:
+                json.dump(benutzer_daten, file, indent=4)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return HttpResponseBadRequest("Fehler beim Aktualisieren der Benutzerdaten.")
+    return redirect("profile_page_admin")
+
+def benutzer_entsperren(request):
+    if request.method == "POST":
+        benutzername = request.POST.get("benutzername")
+        try:
+            with open(registrierte_benutzer, "r", encoding="utf-8") as file:
+                benutzer_daten = json.load(file)
+            for user in benutzer_daten["users"]:
+                if user["username"] == benutzername:
+                    user["zugriff"] = True
+                    break
+            with open(registrierte_benutzer, "w", encoding="utf-8") as file:
+                json.dump(benutzer_daten, file, indent=4)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return HttpResponseBadRequest("Fehler beim Aktualisieren der Benutzerdaten.")
+    return redirect("profile_page_admin")
+
+
+#################################
+# Ab hier Profilseite eines Basis-Users bzw. VIP
+#################################
+
+
+def profile_page_user_view(request):
+    eingeloggter_user = request.session.get("username")
+    user_initiale = eingeloggter_user[0].upper()
+    try:
+        with open(registrierte_benutzer, "r", encoding="utf-8") as file:
+            benutzer_daten = json.load(file)  # JSON-Daten laden
+            for user in benutzer_daten["users"]:
+                if user["username"] == eingeloggter_user:
+                    matrikelnummer = user["matrikelnummer"]
+                    status_angemeldeter_user = user["status"]
+                    break
+            else:
+                matrikelnummer = None  # Falls der Benutzer nicht gefunden wurde
+    except FileNotFoundError:
+        benutzer_daten = {"users": []}  # Leere Liste, falls Datei nicht existiert
+    except json.JSONDecodeError:
+        return HttpResponseBadRequest("Fehler beim Laden der Benutzerdaten-Datei.")
+    return render(request, "meine_app/profile_page_user.html", {"benutzer_daten": eingeloggter_user, "user_initiale": user_initiale, "matrikelnummer": matrikelnummer, "status_angemeldeter_user": status_angemeldeter_user})
+
+def status_upgrade_anfrage(request):
+    if request.method == "POST":
+        username = request.session.get("username")
+        matrikelnummer = request.POST.get("matrikelnummer")
+
+        neue_anfrage = {
+            "username": username,
+            "matrikelnummer": matrikelnummer
+        }
+
+        try:
+            with open(anfragen_datei, "r", encoding="utf-8") as file:
+                daten = json.load(file)
+        except FileNotFoundError:
+            daten = {"anfragen": []}
+        except json.JSONDecodeError:
+            return HttpResponseBadRequest("Fehler beim Laden der Anfragen-Datei.")
+
+        daten["anfragen"].append(neue_anfrage)
+
+        try:
+            with open(anfragen_datei, "w", encoding="utf-8") as file:
+                json.dump(daten, file, indent=4)
+        except IOError:
+            return HttpResponseBadRequest("Fehler beim Speichern der Anfragen-Datei.")
+
+        return redirect("profile_page_user")
