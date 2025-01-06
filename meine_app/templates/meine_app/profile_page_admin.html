@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Profilseite</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'profile_page_admin.css' %}">
+</head>
+<body>
+    <header>
+        <div class="logo-name">Profilseite Admin</div>
+        <a href="{% url 'home' %}" class="profile-button">Zurück zur Startseite</a>
+    </header>
+    <br>
+
+    <div class="profile-container">
+        <div class="profile-pic" id="profile-pic">{{ user_initiale }}</div>
+        <div class="username">{{ eingeloggter_user }}</div>
+    </div>
+
+    <br>
+    <table>
+        <thead>
+            <tr>
+                <th colspan="3">Postfach für Upgrade-Anfragen der Benutzer</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Benutzername</th>
+                <th>Matrikelnummer</th>
+                <th>Aktion</th>
+            </tr>
+            {% if anfrage_daten %}
+                {% for anfrage in anfrage_daten %}
+                <tr>
+                    <td>{{ anfrage.username }}</td>
+                    <td>{{ anfrage.matrikelnummer }}</td>
+                    <td>
+                        <form method="post" action="{% url 'loesche_anfrage' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="username" value="{{ anfrage.username }}">
+                            <input type="hidden" name="matrikelnummer" value="{{ anfrage.matrikelnummer }}">
+                            <button type="submit">User-Status upgraden und Anfrage löschen</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="3">Keine Anfragen vorhanden</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>   
+ 
+    <br>
+    <hr>
+    <br>
+
+    <table>
+        <thead>
+            <tr>
+                <th colspan="6">Übersicht über alle registrierten Benutzer</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Benutzername</th>
+                <th>Matrikelnummer</th>
+                <th>Status</th>
+                <th>Zugriff</th>
+                <th>Status Upgrade/Downgrade</th>
+                <th>Benutzer Sperren/Entsperren</th>
+            </tr>
+            {% for benutzer in benutzer_daten %}
+            <tr>
+                <td>{{ benutzer.username }}</td>
+                <td>{{ benutzer.matrikelnummer }}</td>
+                <td>{{ benutzer.status }}</td>
+                <td>{{ benutzer.zugriff }}</td>
+                <td>
+                    <form method="post" action="{% url 'status_upgrade' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="benutzername" value="{{ benutzer.username }}">
+                        <button type="submit">Upgrade Status</button>
+                        <button type="submit" formaction="{% url 'status_downgrade' %}">Downgrade Status</button>
+                    </form>
+                </td>
+                <td>
+                    {% if benutzer.zugriff %}
+                    <form method="post" action="{% url 'benutzer_sperren' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="benutzername" value="{{ benutzer.username }}">
+                        <button type="submit">Benutzer sperren</button>
+                    </form>
+                    {% else %}
+                    <form method="post" action="{% url 'benutzer_entsperren' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="benutzername" value="{{ benutzer.username }}">
+                        <button type="submit">Benutzer entsperren</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <br> 
+    <hr>
+    <br>
+
+    <h1>Zusammenfassung aller Arbeitsberichte  (in progress)</h1>
+</body>
+</html>
+

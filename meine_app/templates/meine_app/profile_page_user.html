@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profilseite</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'profile_page_admin.css' %}">    
+</head>
+<body>
+    <header>
+        <div class="logo-name">Profilseite User und VIP</div>
+        <a href="{% url 'home' %}" class="profile-button">Zurück zur Startseite</a>
+    </header>
+    <br>
+
+    <div class="profile-container">
+        <div class="profile-pic" id="profile-pic">{{ user_initiale }}</div>
+        <div class="username">{{ benutzer_daten }}</div>
+    </div>
+
+    <br>
+    <table>
+        <thead>
+            <tr>
+                <th colspan="4">Anfrage für Status-Upgrade</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Dein Benutzername</th>
+                <th>Deine Matrikelnummer</th>
+                <th>Dein jetziger Status</th>
+                <th></th>
+            </tr>
+            <tr>
+                <td>{{benutzer_daten}}</td>
+                <td>{{matrikelnummer}}</td>
+                <td>{{status_angemeldeter_user}}</td>
+                <td>
+                    <form method="post" action="{% url 'status_upgrade_anfrage' %}" onsubmit="return showAlert()">
+                        {% csrf_token %}
+                        <input type="hidden" name="matrikelnummer" value="{{ matrikelnummer }}">
+                        <button type="submit">Statusupgrade beantragen - hier klicken!</button>
+                    </form>
+                </td>
+            </tr>  
+        </tbody>
+    </table> 
+   
+    <br> 
+    <hr>
+    <br>
+
+    <h1>Zusammenfassung aller Arbeitsberichte  (in progress)</h1>
+
+    <script>
+        function showAlert() {
+            alert("Anfrage erfolgreich übermittelt");
+            return true;  // Formular wird nach dem Alert abgeschickt
+        }
+    </script>
+</body>
+</html>
+
