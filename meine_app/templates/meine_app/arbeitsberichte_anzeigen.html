@@ -12,7 +12,7 @@
         <a href="{% url 'home' %}" class="profile-button">Zur Startseite</a>
     </header>
     <main>
-        <h2>Deine Arbeitsberichte</h2>
+        <h2>deine Arbeitsberichte</h2>
         <div class="container">
             {% if berichte %}
             <table>
@@ -36,12 +36,6 @@
                         <td>{{ bericht.startzeit }}</td>
                         <td>{{ bericht.endzeit }}</td>
                         <td>{{ bericht.kommentare }}</td>
-                        <td>
-                            <form method="post" action="{% url 'bericht_loeschen' bericht.id %}">
-                                {% csrf_token %}
-                                <button type="submit" class="delete-button">Löschen</button>
-                            </form>
-                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -53,4 +47,5 @@
     </main>
 </body>
 </html>
+
 
