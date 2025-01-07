@@ -113,6 +113,36 @@
     <br>
 
     <h1>Zusammenfassung aller Arbeitsberichte  (in progress)</h1>
+    <br>
+    <table>
+        <thead>
+            <tr>
+                <th colspan="4">So viel hast du an jedem einzelnen Modul gearbeitet</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Modulnummer</th>
+                <th>Modulname</th>
+                <th>Arbeitszeit in Minuten [min]</th>
+                <th>Prozentualer Anteil an Gesamtzeit in %</th>
+            </tr>
+            {% for modul, werte in alle_werte.items %}
+            <tr>
+                <td>{{ modul }}</td>
+                <td>{{ werte.modulname }}</td>
+                <td>{{ werte.nettoarbeitszeit }}</td>
+                <td>{{ werte.prozentualer_anteil }} %</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <th colspan="2">Summe</th>
+                <th>{{gesamt_nettoarbeitszeit}}</th>
+                <th>100 %</th>
+            </tr>
+        </tbody>
+    </table>
+    <br>
 </body>
 </html>
 
