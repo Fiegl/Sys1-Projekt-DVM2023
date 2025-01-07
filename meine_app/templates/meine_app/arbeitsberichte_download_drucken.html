@@ -1,11 +1,13 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
     <meta charset="UTF-8">
     <title>Download und Drucken</title>
     <link rel="stylesheet" type="text/css" href="{% static 'arbeitsberichte_download_drucken.css' %}">
 </head>
+
 <body>
     <header>
         <div class="logo-name">DVM-Zeiterfassung</div>
@@ -31,7 +33,6 @@
                         <td>{{ bericht.berichtsname }}</td>
                         <td>
                             <div class="action-buttons">
-                                <!-- Download-Buttons -->
                                 <form method="get" action="{% url 'bericht_herunterladen' 'json' bericht.id %}">
                                     <button type="submit" class="action-button">JSON</button>
                                 </form>
@@ -44,12 +45,13 @@
                             </div>
                         </td>
                         <td>
-                            <!-- Upload-Formular -->
                             <form method="post" enctype="multipart/form-data" action="{% url 'bericht_hochladen' %}">
                                 {% csrf_token %}
-                                <input type="file" name="upload_file" class="upload-input" accept=".json" required>
-                                <button type="submit" class="action-button upload-button">Upload</button>
+                                <label for="upload_file">JSON-Datei hochladen:</label>
+                                <input type="file" id="upload_file" name="upload_file" accept=".json" required>
+                                <button type="submit">Hochladen</button>
                             </form>
+                            
                         </td>
                     </tr>
                     {% endfor %}
@@ -61,5 +63,6 @@
         </div>
     </main>
 </body>
+
 </html>
 
