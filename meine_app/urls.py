@@ -14,7 +14,8 @@ urlpatterns = [
     
    
     path('arbeitsberichte_download_drucken/', views.arbeitsberichte_download_drucken_view, name='arbeitsberichte_download_drucken'),
-    path('arbeitsberichte_herunterladen/<str:format>/<str:bericht_id>/', views.bericht_herunterladen, name='bericht_herunterladen'),
+    path('bericht_herunterladen/<str:format>/<str:bericht_id>/', views.bericht_herunterladen, name='bericht_herunterladen'),
+    path('bericht_hochladen/', views.bericht_hochladen, name='bericht_hochladen'),
 
 
     path('profile_page_admin/', views.profile_page_view, name='profile_page_admin'),
@@ -25,5 +26,8 @@ urlpatterns = [
     path('benutzer_entsperren/', views.benutzer_entsperren, name='benutzer_entsperren'),
 
     path('profile_page_user/', views.profile_page_user_view, name='profile_page_user'),
-    path('status_upgrade_anfrage/', views.status_upgrade_anfrage, name='status_upgrade_anfrage'),       
+    path('status_upgrade_anfrage/', views.status_upgrade_anfrage, name='status_upgrade_anfrage'),    
+
+    path('beispiel/', views.beispiel_view, name='beispiel'),
+    
 ]
