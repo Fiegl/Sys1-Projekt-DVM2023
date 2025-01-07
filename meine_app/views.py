@@ -410,7 +410,11 @@ def loesche_anfrage(request):
         except json.JSONDecodeError:
             return HttpResponseBadRequest("Fehler beim Laden der Anfragen-Datei.")
 
-        daten["anfragen"] = [anfrage for anfrage in daten["anfragen"] if not (anfrage["username"] == username and anfrage["matrikelnummer"] == matrikelnummer)]
+        neue_anfragen = []
+        for anfrage in daten["anfragen"]:
+            if not (anfrage["username"] == username and anfrage["matrikelnummer"] == matrikelnummer):
+                neue_anfragen.append(anfrage)
+        daten["anfragen"] = neue_anfragen
 
         try:
             with open(anfragen_datei, "w", encoding="utf-8") as file:
