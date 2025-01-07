@@ -434,7 +434,7 @@ def bericht_hochladen(request):
 def profile_page_view(request):
     eingeloggter_user = request.session.get("username")
     user_initiale = eingeloggter_user[0].upper()
-
+    
     try:
         with open(registrierte_benutzer, "r", encoding="utf-8") as file:
             benutzer_daten = json.load(file)  # JSON-Daten laden
@@ -442,7 +442,7 @@ def profile_page_view(request):
         benutzer_daten = {"users": []}  # Leere Liste, falls Datei nicht existiert
     except json.JSONDecodeError:
         return HttpResponseBadRequest("Fehler beim Laden der Benutzerdaten-Datei.")
-
+    
     try:
         with open(anfragen_datei, "r", encoding="utf-8") as file:
             anfrage_daten = json.load(file)  # JSON-Daten laden
@@ -450,12 +450,56 @@ def profile_page_view(request):
         anfrage_daten = {"anfragen": []}  # Leere Liste, falls Datei nicht existiert
     except json.JSONDecodeError:
         return HttpResponseBadRequest("Fehler beim Laden der Anfragen-Datei.")
+    
+
+    # JSON-Datei mit Arbeitsberichten laden
+    with open(arbeitsbericht_erstellen, 'r') as file:
+        daten = json.load(file)
+
+    # Dictionary zur Speicherung der aggregierten Arbeitszeiten
+    arbeitszeiten_module = {}
+
+    # Eintraege des eingeloggten Benutzers durchsuchen und aggregieren
+    for bericht in daten['arbeitsberichte']:
+        if bericht['benutzername'] == eingeloggter_user:
+            modul = bericht['modul']
+            nettoarbeitszeit = bericht['nettoarbeitszeit']
+            if modul in arbeitszeiten_module:
+                arbeitszeiten_module[modul] += nettoarbeitszeit
+            else:
+                arbeitszeiten_module[modul] = nettoarbeitszeit
+
+    # Gesamtsumme der Nettoarbeitszeiten berechnen
+    gesamt_nettoarbeitszeit = sum(arbeitszeiten_module.values())
+
+    # Prozentualen Anteil jedes Moduls berechnen und auf ganze Zahlen runden
+    prozentualer_anteil = {}
+    for modul, zeit in arbeitszeiten_module.items():
+        prozentualer_anteil[modul] = round((zeit / gesamt_nettoarbeitszeit) * 100)
+
+    # JSON-Datei mit Modulnamen laden
+    with open(datenbank_module, 'r') as file:
+        module_daten = json.load(file)
+
+    # Neues Dictionary zur Speicherung aller Werte
+    alle_werte = {}
+    for modul, zeit in arbeitszeiten_module.items():
+        alle_werte[modul] = {
+            "modulname": module_daten["module"][modul],
+            "nettoarbeitszeit": zeit,
+            "prozentualer_anteil": prozentualer_anteil[modul]
+        }
+
+    # Dictionary nach Keys sortieren
+    alle_werte = dict(sorted(alle_werte.items()))
 
     allerUebergebenerInhalt = {
         "benutzer_daten": benutzer_daten["users"],
         "anfrage_daten": anfrage_daten["anfragen"],
         "user_initiale": user_initiale,
         "eingeloggter_user": eingeloggter_user,
+        "alle_werte": alle_werte,
+        "gesamt_nettoarbeitszeit": gesamt_nettoarbeitszeit
     }
 
     return render(request, "meine_app/profile_page_admin.html", allerUebergebenerInhalt)
