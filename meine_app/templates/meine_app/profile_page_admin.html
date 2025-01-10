@@ -112,9 +112,12 @@
     <hr>
     <br>
 
-    <h1>Zusammenfassung aller Arbeitsberichte</h1>
+    <div class="druckContainer">
+        <h1 id="druckUeberschrift">Zusammenfassung aller Arbeitsberichte</h1>
+        <button id="druckButton" onclick="printArbeitsberichteZusammenfassung()">Hier: Zusammenfassung Arbeitsberichte drucken</button>
+    </div>
     <br>
-    <table>
+    <table id="tabelleDrucken">
         <thead>
             <tr>
                 <th colspan="4">So viel hast du an jedem einzelnen Modul gearbeitet</th>
@@ -143,6 +146,18 @@
         </tbody>
     </table>
     <br>
+    <script>
+        function printArbeitsberichteZusammenfassung() {
+            const ueberschriftTabelle = document.getElementById("druckUeberschrift").outerHTML;
+            const letzteTabelle = document.getElementById("tabelleDrucken").outerHTML;
+            const printInhalt = ueberschriftTabelle + letzteTabelle;
+            const ganzerInhaltSeite = document.body.innerHTML;
+            document.body.innerHTML = printInhalt;
+            window.print();
+            document.body.innerHTML = ganzerInhaltSeite;
+        }
+    </script>
+    
 </body>
 </html>
 
