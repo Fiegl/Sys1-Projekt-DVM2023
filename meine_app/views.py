@@ -640,7 +640,6 @@ def benutzer_entsperren(request):
 # Ab hier Profilseite eines Basis-Users bzw. VIP
 #################################
 
-
 def profile_page_user_view(request):
     eingeloggter_user = request.session.get("username")
     user_initiale = eingeloggter_user[0].upper()
@@ -658,17 +657,59 @@ def profile_page_user_view(request):
         benutzer_daten = {"users": []}  # Leere Liste, falls Datei nicht existiert
     except json.JSONDecodeError:
         return HttpResponseBadRequest("Fehler beim Laden der Benutzerdaten-Datei.")
-    return render(
-        request,
-        "meine_app/profile_page_user.html",
-        {
-            "benutzer_daten": eingeloggter_user,
-            "user_initiale": user_initiale,
-            "matrikelnummer": matrikelnummer,
-            "status_angemeldeter_user": status_angemeldeter_user,
-        },
-    )
 
+
+    ### JSON-Datei mit Arbeitsberichten laden
+    with open(arbeitsbericht_erstellen, 'r') as file:
+        daten = json.load(file)
+
+    # Dictionary zur Speicherung der aggregierten Arbeitszeiten
+    arbeitszeiten_module = {}
+
+    # Eintraege des eingeloggten Benutzers durchsuchen und aggregieren
+    for bericht in daten['arbeitsberichte']:
+        if bericht['benutzername'] == eingeloggter_user:
+            modul = bericht['modul']
+            nettoarbeitszeit = bericht['nettoarbeitszeit']
+            if modul in arbeitszeiten_module:
+                arbeitszeiten_module[modul] += nettoarbeitszeit
+            else:
+                arbeitszeiten_module[modul] = nettoarbeitszeit
+
+    # Gesamtsumme der Nettoarbeitszeiten berechnen
+    gesamt_nettoarbeitszeit = sum(arbeitszeiten_module.values())
+
+    # Prozentualen Anteil jedes Moduls berechnen und auf ganze Zahlen runden
+    prozentualer_anteil = {}
+    for modul, zeit in arbeitszeiten_module.items():
+        prozentualer_anteil[modul] = round((zeit / gesamt_nettoarbeitszeit) * 100)
+
+    # JSON-Datei mit Modulnamen laden
+    with open(datenbank_module, 'r') as file:
+        module_daten = json.load(file)
+
+    # Neues Dictionary zur Speicherung aller Werte
+    alle_werte = {}
+    for modul, zeit in arbeitszeiten_module.items():
+        alle_werte[modul] = {
+            "modulname": module_daten["module"][modul],
+            "nettoarbeitszeit": zeit,
+            "prozentualer_anteil": prozentualer_anteil[modul]
+        }
+
+    # Dictionary nach Keys sortieren
+    alle_werte = dict(sorted(alle_werte.items()))
+
+    content= {
+        "benutzer_daten": eingeloggter_user,
+        "user_initiale": user_initiale,
+        "matrikelnummer": matrikelnummer,
+        "status_angemeldeter_user": status_angemeldeter_user,
+        "alle_werte": alle_werte,
+        "gesamt_nettoarbeitszeit": gesamt_nettoarbeitszeit
+    }
+
+    return render(request, "meine_app/profile_page_user.html", content)
 
 def status_upgrade_anfrage(request):
     if request.method == "POST":
