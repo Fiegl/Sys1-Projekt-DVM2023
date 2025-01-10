@@ -51,6 +51,10 @@ th, td {
 th {
     background-color: #f2f2f2;
 }
+th[colspan] {
+    background-color: #e0e0e0; /* Leicht graue Hintergrundfarbe */
+}
+
 .profile-container {
     display: flex;
     align-items: center;
@@ -71,4 +75,21 @@ th {
 .username {
     font-size: 40px;             /* Schriftgröße des Benutzernamens neben dem Bild */
     font-weight: bold;
+}
+
+
+.druckContainer {
+    display: flex;
+    align-items: center;
+}
+#druckUeberschrift {
+    margin-right: 20px;    /* Abstand zwischen der Überschrift und dem Button */
+}
+#druckButton {
+    margin-left: 0;        /* Entfernt das automatische Verschieben nach rechts */
+}
+@media print {
+    th[colspan] {
+        background-color: #e0e0e0 !important;    /* Befehl an Browser, Hintergrundfarben beim Drucken zu beachten */
+    }
 }
