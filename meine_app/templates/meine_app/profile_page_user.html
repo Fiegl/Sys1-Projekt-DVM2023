@@ -52,12 +52,54 @@
     <hr>
     <br>
 
-    <h1>Zusammenfassung aller Arbeitsberichte  (in progress)</h1>
+    <div class="druckContainer">
+        <h1 id="druckUeberschrift">Zusammenfassung aller Arbeitsberichte</h1>
+        <button id="druckButton" onclick="printArbeitsberichteZusammenfassung()">Hier: Zusammenfassung Arbeitsberichte drucken</button>
+    </div>
+    <br>
+    <table id="tabelleDrucken">
+        <thead>
+            <tr>
+                <th colspan="4">So viel hast du an jedem einzelnen Modul gearbeitet</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Modulnummer</th>
+                <th>Modulname</th>
+                <th>Arbeitszeit in Minuten [min]</th>
+                <th>Prozentualer Anteil an Gesamtzeit in %</th>
+            </tr>
+            {% for modul, werte in alle_werte.items %}
+            <tr>
+                <td>{{ modul }}</td>
+                <td>{{ werte.modulname }}</td>
+                <td>{{ werte.nettoarbeitszeit }}</td>
+                <td>{{ werte.prozentualer_anteil }} %</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <th colspan="2">Summe</th>
+                <th>{{gesamt_nettoarbeitszeit}}</th>
+                <th>100 %</th>
+            </tr>
+        </tbody>
+    </table>
+    <br>
 
     <script>
         function showAlert() {
             alert("Anfrage erfolgreich übermittelt");
             return true;  // Formular wird nach dem Alert abgeschickt
+        }
+        function printArbeitsberichteZusammenfassung() {
+            const ueberschriftTabelle = document.getElementById("druckUeberschrift").outerHTML;
+            const letzteTabelle = document.getElementById("tabelleDrucken").outerHTML;
+            const printInhalt = ueberschriftTabelle + letzteTabelle;
+            const ganzerInhaltSeite = document.body.innerHTML;
+            document.body.innerHTML = printInhalt;
+            window.print();
+            document.body.innerHTML = ganzerInhaltSeite;
         }
     </script>
 </body>
