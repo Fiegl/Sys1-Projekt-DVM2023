@@ -478,7 +478,7 @@ def profile_page_view(request):
         prozentualer_anteil[modul] = round((zeit / gesamt_nettoarbeitszeit) * 100)
 
     # JSON-Datei mit Modulnamen laden
-    with open(datenbank_module, 'r') as file:
+    with open(datenbank_module, 'r', encoding="utf-8") as file:
         module_daten = json.load(file)
 
     # Neues Dictionary zur Speicherung aller Werte
