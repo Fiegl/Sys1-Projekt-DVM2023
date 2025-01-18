@@ -13,6 +13,7 @@ registrierte_benutzer = "/var/www/buchungssystem/db/users.json"
 arbeitsbericht_erstellen = "/var/www/buchungssystem/db/arbeitsberichte.json"
 datenbank_module = "/var/www/buchungssystem/db/module.json"
 anfragen_datei = "/var/www/buchungssystem/db/anfragen.json"
+datenbank_module_editable = "/var/www/buchungssystem/db/module_editable.json"
 
 
 # Hier die Funktionen für Registrieren, Ein- und Auslogen
@@ -181,31 +182,29 @@ def logout_view(request):
 
 def arbeitsbericht_erstellen_view(request):
     try:
-        with open(datenbank_module, "r", encoding="utf-8") as file:
-            module = json.load(file)["module"]
+        with open(datenbank_module_editable, 'r', encoding='utf-8') as file:
+            module = json.load(file)['module_on']
     except (FileNotFoundError, json.JSONDecodeError):
         return HttpResponseBadRequest("Fehler beim Laden der Module-Datei.")
-    return render(
-        request, "meine_app/arbeitsbericht_erstellen.html", {"module": module}
-    )
+    return render(request, "meine_app/arbeitsbericht_erstellen.html", {"module": module})
 
 
 def arbeitsbericht_speichern(request):
-    neue_uuid = str(uuid.uuid4())  # UUID in String umwandeln
+    neue_uuid = str(uuid.uuid4())                        # UUID in String umwandeln
     if request.method == "POST":
-        benutzer = request.session.get("username")  # Aktueller Benutzer
+        benutzer = request.session.get("username")       # Aktueller Benutzer
         matrikelnummer = request.session.get("matrikelnummer")
         modul = request.POST.get("modul")
         berichtsname = request.POST.get("berichtsname")
         startzeit = request.POST.get("startzeit")
         endzeit = request.POST.get("endzeit")
-        breaktime = request.POST.get("breaktime", 0)  # Optional, Standardwert 0
+        breaktime = request.POST.get("breaktime", 0)      # Optional, Standardwert 0
         kommentare = request.POST.get("kommentare", "")
 
         # Matrikelnummer aus der Benutzerdatei abrufen
         try:
             with open(registrierte_benutzer, "r", encoding="utf-8") as file:
-                benutzer_daten = json.load(file)
+                benutzer_daten = json.load(file)        
             # Suche nach dem Benutzer in den Benutzerdaten
             user_info = None
             for user in benutzer_daten["users"]:
@@ -218,6 +217,7 @@ def arbeitsbericht_speichern(request):
             else:
                 matrikelnummer = None
 
+        
         except (FileNotFoundError, KeyError):
             return HttpResponseBadRequest("Fehler beim Abrufen der Matrikelnummer.")
 
@@ -227,24 +227,16 @@ def arbeitsbericht_speichern(request):
         # Arbeitsberichte aus der Datei laden
         try:
             with open(arbeitsbericht_erstellen, "r", encoding="utf-8") as file:
-                daten = json.load(file)  # Vorhandene JSON-Daten laden
+                daten = json.load(file)         # Vorhandene JSON-Daten laden
         except FileNotFoundError:
-            daten = {
-                "arbeitsberichte": []
-            }  # Initiale Struktur, falls Datei nicht existiert
+            daten = {"arbeitsberichte": []}     # Initiale Struktur, falls Datei nicht existiert
         except json.JSONDecodeError:
-            return HttpResponseBadRequest(
-                "Fehler beim Laden der Arbeitsberichte-Datei."
-            )
+            return HttpResponseBadRequest("Fehler beim Laden der Arbeitsberichte-Datei.")
 
-        timeStart = datetime.fromisoformat(
-            startzeit
-        )  # Zeitdifferenz zwischen Start und Endzeit wird direkt hier ausgerechnet und mit in die JSON gespeichert.
+        timeStart = datetime.fromisoformat(startzeit)      # Zeitdifferenz zwischen Start und Endzeit wird direkt hier ausgerechnet und mit in die JSON gespeichert.
         timeEnd = datetime.fromisoformat(endzeit)
         deltaRaw = timeEnd - timeStart
-        zeitdauer = int(
-            deltaRaw.total_seconds() / 60
-        )  # Aufruf Methode total_seconds von date-time-Modul
+        zeitdauer = int(deltaRaw.total_seconds() / 60)     # Aufruf Methode total_seconds von date-time-Modul
         pausenzeit = int(breaktime)
         netto_arbeitszeit = zeitdauer - pausenzeit
 
@@ -259,7 +251,7 @@ def arbeitsbericht_speichern(request):
             "endzeit": endzeit,
             "pausenzeit": pausenzeit,
             "nettoarbeitszeit": netto_arbeitszeit,
-            "kommentare": kommentare,
+            "kommentare": kommentare            
         }
 
         # Neuen Bericht hinzufügen
@@ -270,9 +262,7 @@ def arbeitsbericht_speichern(request):
             with open(arbeitsbericht_erstellen, "w", encoding="utf-8") as file:
                 json.dump(daten, file, indent=4)
         except OSError:
-            return HttpResponseBadRequest(
-                "Fehler beim Speichern der Arbeitsberichte-Datei."
-            )
+            return HttpResponseBadRequest("Fehler beim Speichern der Arbeitsberichte-Datei.")
 
         return redirect("home")  # Nach dem Speichern zur Startseite weiterleiten
 
@@ -634,6 +624,93 @@ def benutzer_entsperren(request):
                 "Fehler beim Aktualisieren der Benutzerdaten."
             )
     return redirect("profile_page_admin")
+
+
+
+### ab hier: reportbare Module durch Admin festlegen   ###
+
+def module_edit(request):
+    try:
+        with open(datenbank_module_editable, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+    except Exception as e1:
+        return HttpResponseBadRequest(f'Fehler beim Laden der Datei: {str(e1)}')
+
+    if request.method == 'POST':
+        module_on = {}
+        module_off = {}
+
+        for key, value in data['module_on'].items():
+            if request.POST.get(f'module_on_{key}'):
+                module_on[key] = value
+            else:
+                module_off[key] = value
+
+        for key, value in data['module_off'].items():
+            if request.POST.get(f'module_off_{key}'):
+                module_on[key] = value
+            else:
+                module_off[key] = value
+
+        # Sortiere die Dictionaries nach den Modulnummern
+        module_on = dict(sorted(module_on.items()))
+        module_off = dict(sorted(module_off.items()))
+
+        data['module_on'] = module_on
+        data['module_off'] = module_off
+
+
+        try:
+            with open(datenbank_module_editable, 'w', encoding='utf-8') as file:
+                json.dump(data, file, indent=4, ensure_ascii=False)
+        except Exception as e2:
+            return HttpResponseBadRequest(f'Fehler beim Speichern der Datei: {str(e2)}')
+        return redirect("module_edit")
+
+    inhalte_json = {
+        'module_on': data['module_on'],
+        'module_off': data['module_off']
+    }
+    return render(request, 'meine_app/module_edit.html', inhalte_json)
+
+def neues_modul_abspeichern(request):
+    if request.method == 'POST':
+        modulnummer = request.POST.get('modulnummer')
+        modulname = request.POST.get('modulname')
+
+        try:
+            with open(datenbank_module_editable, 'r', encoding='utf-8') as file:
+                data_editable = json.load(file)
+        except Exception as fehler1:
+            return HttpResponseBadRequest(f'Fehler beim Laden der Datei: {str(fehler1)}')
+
+        try:
+            with open(datenbank_module, 'r', encoding='utf-8') as file:
+                data = json.load(file)
+        except Exception as fehler2:
+            return HttpResponseBadRequest(f'Fehler beim Laden der Datei: {str(fehler2)}')
+
+        # Neues Modul in module_off von datenbank_module_editable hinzufügen
+        data_editable['module_off'][modulnummer] = modulname
+
+        # Neues Modul in module von datenbank_module hinzufügen
+        data['module'][modulnummer] = modulname
+
+        try:
+            with open(datenbank_module_editable, 'w', encoding='utf-8') as file:
+                json.dump(data_editable, file, indent=4, ensure_ascii=False)
+        except Exception as fehler3:
+            return HttpResponseBadRequest(f'Fehler beim Speichern der Datei: {str(fehler3)}')
+
+        try:
+            with open(datenbank_module, 'w', encoding='utf-8') as file:
+                json.dump(data, file, indent=4, ensure_ascii=False)
+        except Exception as fehler4:
+            return HttpResponseBadRequest(f'Fehler beim Speichern der Datei: {str(fehler4)}')
+
+        return redirect("module_edit")
+
+    return HttpResponseBadRequest('Ungültige Anfrage.')
 
 
 #################################
