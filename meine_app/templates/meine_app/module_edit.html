@@ -1,0 +1,117 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>reportbare Module bearbeiten</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'module_edit.css' %}">
+</head>
+<body>
+    <header>
+        <div class="logo-name">Profilseite Admin - Module bearbeiten</div>
+        <a href="{% url 'home' %}" class="profile-button">Zurück zur Startseite</a>
+    </header>
+    <br>
+
+    <h1>Auswahl der reportbaren Module durch die User bearbeiten</h1>
+    <form method="post">
+        {% csrf_token %}
+        <h2>Aktive Module</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="3">Tabelle aller aktiven Module ( = reportbar durch User)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>Auswahl der reportbaren Module</th>
+                    <th>Modulnummer</th>
+                    <th>Modulname</th>
+                </tr>
+                {% if module_on %}
+                    {% for key, value in module_on.items %}
+                    <tr>
+                        <td><input type="checkbox" name="module_on_{{ key }}" checked></td>
+                        <td>{{ key }}</td>
+                        <td>{{ value }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="3">Keine Module vorhanden</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+   
+        <br>
+        <hr>
+
+        <h2>Inaktive Module</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="3">Tabelle aller inaktiven Module ( = nicht reportbar durch User)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>Auswahl der reportbaren Module</th>
+                    <th>Modulnummer</th>
+                    <th>Modulname</th>
+                </tr>
+                {% if module_off %}
+                    {% for key, value in module_off.items %}
+                    <tr>
+                        <td><input type="checkbox" name="module_off_{{ key }}"></td>
+                        <td>{{ key }}</td>
+                        <td>{{ value }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="3">Keine Module vorhanden</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+        <br>
+        <button type="submit">Speichern</button>
+    </form>
+
+    <br>
+    <hr>
+
+    <h2>Neues Modul hinzufügen</h2>
+    <form method="post" action="{% url 'neues_modul_abspeichern' %}">
+        {% csrf_token %}
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="3">Neues Modul hinzufügen</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>Modulname</th>
+                    <th>Modulnummer</th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <td><input type="text" id="modulnummer" name="modulnummer" placeholder="hier neue Modulnummer wie '1.1.3' eingeben" required class="volle_breite_inputfelder zentrierter-placeholder" ></td>
+                    <td><input type="text" id="modulname" name="modulname" placeholder="hier neuer Modulname wie 'Informatik III' eingeben" required class="volle_breite_inputfelder zentrierter-placeholder" ></td>
+                    <td><button type="submit">Neues Modul speichern</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+    
+    <br>
+
+</body>
+</html>
+
+
+
+
