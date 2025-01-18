@@ -25,6 +25,9 @@ urlpatterns = [
     path('benutzer_sperren/', views.benutzer_sperren, name='benutzer_sperren'),
     path('benutzer_entsperren/', views.benutzer_entsperren, name='benutzer_entsperren'),
 
+    path('module_edit/', views.module_edit, name='module_edit'),
+    path('neues_modul_abspeichern/', views.neues_modul_abspeichern, name='neues_modul_abspeichern'), 
+
     path('profile_page_user/', views.profile_page_user_view, name='profile_page_user'),
     path('status_upgrade_anfrage/', views.status_upgrade_anfrage, name='status_upgrade_anfrage'),    
 
