@@ -27,18 +27,24 @@
                         <th>Aktionen</th>
                     </tr>
                 </thead>
-                <tbody>
-                    {% for bericht in berichte %}
-                    <tr>
-                        <td>{{ bericht.id }}</td>
-                        <td>{{ bericht.modul }}</td>
-                        <td>{{ bericht.berichtsname }}</td>
-                        <td>{{ bericht.startzeit }}</td>
-                        <td>{{ bericht.endzeit }}</td>
-                        <td>{{ bericht.kommentare }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
+           <tbody>
+    {% for bericht in berichte %}
+    <tr>
+        <td>{{ bericht.id }}</td>
+        <td>{{ bericht.modul }}</td>
+        <td>{{ bericht.berichtsname }}</td>
+        <td>{{ bericht.startzeit }}</td>
+        <td>{{ bericht.endzeit }}</td>
+        <td>{{ bericht.kommentare }}</td>
+        <td>
+            <form method="post" action="{% url 'arbeitsbericht_loeschen' bericht.id %}">
+                {% csrf_token %}
+                <button type="submit" class="action-button">Löschen</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</tbody>
             </table>
             {% else %}
             <p>Es wurden noch keine Arbeitsberichte erstellt.</p>
