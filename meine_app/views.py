@@ -182,29 +182,31 @@ def logout_view(request):
 
 def arbeitsbericht_erstellen_view(request):
     try:
-        with open(datenbank_module_editable, 'r', encoding='utf-8') as file:
-            module = json.load(file)['module_on']
+        with open(datenbank_module, "r", encoding="utf-8") as file:
+            module = json.load(file)["module"]
     except (FileNotFoundError, json.JSONDecodeError):
         return HttpResponseBadRequest("Fehler beim Laden der Module-Datei.")
-    return render(request, "meine_app/arbeitsbericht_erstellen.html", {"module": module})
+    return render(
+        request, "meine_app/arbeitsbericht_erstellen.html", {"module": module}
+    )
 
 
 def arbeitsbericht_speichern(request):
-    neue_uuid = str(uuid.uuid4())                        # UUID in String umwandeln
+    neue_uuid = str(uuid.uuid4())  # UUID in String umwandeln
     if request.method == "POST":
-        benutzer = request.session.get("username")       # Aktueller Benutzer
+        benutzer = request.session.get("username")  # Aktueller Benutzer
         matrikelnummer = request.session.get("matrikelnummer")
         modul = request.POST.get("modul")
         berichtsname = request.POST.get("berichtsname")
         startzeit = request.POST.get("startzeit")
         endzeit = request.POST.get("endzeit")
-        breaktime = request.POST.get("breaktime", 0)      # Optional, Standardwert 0
+        breaktime = request.POST.get("breaktime", 0)  # Optional, Standardwert 0
         kommentare = request.POST.get("kommentare", "")
 
         # Matrikelnummer aus der Benutzerdatei abrufen
         try:
             with open(registrierte_benutzer, "r", encoding="utf-8") as file:
-                benutzer_daten = json.load(file)        
+                benutzer_daten = json.load(file)
             # Suche nach dem Benutzer in den Benutzerdaten
             user_info = None
             for user in benutzer_daten["users"]:
@@ -217,7 +219,6 @@ def arbeitsbericht_speichern(request):
             else:
                 matrikelnummer = None
 
-        
         except (FileNotFoundError, KeyError):
             return HttpResponseBadRequest("Fehler beim Abrufen der Matrikelnummer.")
 
@@ -227,16 +228,24 @@ def arbeitsbericht_speichern(request):
         # Arbeitsberichte aus der Datei laden
         try:
             with open(arbeitsbericht_erstellen, "r", encoding="utf-8") as file:
-                daten = json.load(file)         # Vorhandene JSON-Daten laden
+                daten = json.load(file)  # Vorhandene JSON-Daten laden
         except FileNotFoundError:
-            daten = {"arbeitsberichte": []}     # Initiale Struktur, falls Datei nicht existiert
+            daten = {
+                "arbeitsberichte": []
+            }  # Initiale Struktur, falls Datei nicht existiert
         except json.JSONDecodeError:
-            return HttpResponseBadRequest("Fehler beim Laden der Arbeitsberichte-Datei.")
+            return HttpResponseBadRequest(
+                "Fehler beim Laden der Arbeitsberichte-Datei."
+            )
 
-        timeStart = datetime.fromisoformat(startzeit)      # Zeitdifferenz zwischen Start und Endzeit wird direkt hier ausgerechnet und mit in die JSON gespeichert.
+        timeStart = datetime.fromisoformat(
+            startzeit
+        )  # Zeitdifferenz zwischen Start und Endzeit wird direkt hier ausgerechnet und mit in die JSON gespeichert.
         timeEnd = datetime.fromisoformat(endzeit)
         deltaRaw = timeEnd - timeStart
-        zeitdauer = int(deltaRaw.total_seconds() / 60)     # Aufruf Methode total_seconds von date-time-Modul
+        zeitdauer = int(
+            deltaRaw.total_seconds() / 60
+        )  # Aufruf Methode total_seconds von date-time-Modul
         pausenzeit = int(breaktime)
         netto_arbeitszeit = zeitdauer - pausenzeit
 
@@ -251,7 +260,7 @@ def arbeitsbericht_speichern(request):
             "endzeit": endzeit,
             "pausenzeit": pausenzeit,
             "nettoarbeitszeit": netto_arbeitszeit,
-            "kommentare": kommentare            
+            "kommentare": kommentare,
         }
 
         # Neuen Bericht hinzufügen
@@ -262,7 +271,9 @@ def arbeitsbericht_speichern(request):
             with open(arbeitsbericht_erstellen, "w", encoding="utf-8") as file:
                 json.dump(daten, file, indent=4)
         except OSError:
-            return HttpResponseBadRequest("Fehler beim Speichern der Arbeitsberichte-Datei.")
+            return HttpResponseBadRequest(
+                "Fehler beim Speichern der Arbeitsberichte-Datei."
+            )
 
         return redirect("home")  # Nach dem Speichern zur Startseite weiterleiten
 
@@ -310,6 +321,31 @@ def arbeitsberichte_anzeigen_view(request):
         "meine_app/arbeitsberichte_anzeigen.html",
         {"berichte": eigene_berichte},
     )
+    
+    
+
+def arbeitsbericht_loeschen(request, bericht_id):
+    if request.method == "POST":
+        try:
+            with open(arbeitsbericht_erstellen, "r", encoding="utf-8") as file:
+                daten = json.load(file)
+            berichte = daten.get("arbeitsberichte", [])
+
+            # Filtere den Bericht mit der angegebenen ID heraus
+            neue_berichte = [bericht for bericht in berichte if bericht.get("id") != bericht_id]
+            daten["arbeitsberichte"] = neue_berichte
+
+            # Speichere die aktualisierte Datei
+            with open(arbeitsbericht_erstellen, "w", encoding="utf-8") as file:
+                json.dump(daten, file, indent=4)
+
+        except (FileNotFoundError, json.JSONDecodeError, OSError):
+            return HttpResponseBadRequest("Fehler beim Löschen des Berichts.")
+
+        return redirect("arbeitsberichte_anzeigen")  # Zurück zur Anzeige-Seite
+
+    return HttpResponseBadRequest("Ungültige Anfrage.")
+
 
 
 ####################################################################################################
@@ -626,7 +662,6 @@ def benutzer_entsperren(request):
     return redirect("profile_page_admin")
 
 
-
 ### ab hier: reportbare Module durch Admin festlegen   ###
 
 def module_edit(request):
@@ -737,7 +772,7 @@ def profile_page_user_view(request):
 
 
     ### JSON-Datei mit Arbeitsberichten laden
-    with open(arbeitsbericht_erstellen, 'r') as file:
+    with open(arbeitsbericht_erstellen, 'r', encoding="utf-8") as file:
         daten = json.load(file)
 
     # Dictionary zur Speicherung der aggregierten Arbeitszeiten
@@ -762,7 +797,7 @@ def profile_page_user_view(request):
         prozentualer_anteil[modul] = round((zeit / gesamt_nettoarbeitszeit) * 100)
 
     # JSON-Datei mit Modulnamen laden
-    with open(datenbank_module, 'r') as file:
+    with open(datenbank_module, 'r', encoding="utf-8") as file:
         module_daten = json.load(file)
 
     # Neues Dictionary zur Speicherung aller Werte
