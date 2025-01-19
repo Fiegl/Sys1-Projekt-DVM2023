@@ -82,3 +82,23 @@ table tr:nth-child(even) {
 table tr:hover {
     background-color: #e6f7ff;
 }
+
+.action-button {
+    padding: 8px 15px;
+    background-color: #e74c3c; 
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    text-align: center;
+}
+
+.action-button:hover {
+    background-color: #c0392b; 
+}
+
+.action-button:active {
+    background-color: #a93226;
+}
+
