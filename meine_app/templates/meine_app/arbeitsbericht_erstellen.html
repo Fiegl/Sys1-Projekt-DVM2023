@@ -19,11 +19,11 @@
                 {% csrf_token %}                                                    <!--CSRF-Token muss innerhalb des Form-Elements sein wie auch bei login und register-->
                 <div class="form-group">
                     <label for="startzeit">Startzeit</label>
-                    <input type="datetime-local" id="startzeit" name="startzeit">
+                    <input type="datetime-local" id="startzeit" name="startzeit" required>
                 </div>
                 <div class="form-group">
                     <label for="endzeit">Endzeit</label>
-                    <input type="datetime-local" id="endzeit" name="endzeit">
+                    <input type="datetime-local" id="endzeit" name="endzeit" required>
                 </div>
 		        <div>
 		            <label for="pause"> Pausenzeiten hier aufsummiert eintragen in ganzen Minuten: </label>
@@ -31,8 +31,8 @@
 		        </div>
                 <div class="form-group">
                     <label for="modul">Modul auswählen</label>
-                    <select id="modul" name="modul">
-                        <option value="Auswahl" disabled selected>Bitte auswählen</option>
+                    <select id="modul" name="modul" required>
+                        <option value="" disabled selected>Bitte auswählen</option>
                         {% for key, value in module.items %}
                             <option value="{{ key }}">{{ key }} {{ value }}</option>
                         {% endfor %}
