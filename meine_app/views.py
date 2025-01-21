@@ -4,9 +4,10 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth import logout
-from django.http import HttpResponseBadRequest, HttpResponse, JsonResponse
+from django.http import HttpResponseBadRequest, HttpResponse, JsonResponse, HttpResponseForbidden, HttpResponseServerError
 from datetime import datetime
 import xml.etree.ElementTree as ET
+from functools import wraps
 
 
 # Pfade zu den JSON-Dateien
@@ -17,9 +18,36 @@ anfragen_datei = "/var/www/buchungssystem/db/anfragen.json"
 datenbank_module_editable = "/var/www/buchungssystem/db/module_editable.json"
 
 
+### Zugriff auf URL ohne Berechtigung blocken mit Dekorator ###
+def admin_berechtigung_check(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        eingeloggter_user = request.session.get("username")
+        if not eingeloggter_user:
+            return HttpResponseForbidden("You are not allowed to access this page without Login.")
+
+        try:
+            with open(registrierte_benutzer, 'r', encoding='utf-8') as file:
+                benutzer_daten = json.load(file)
+        except:
+            return HttpResponseServerError('Fehler beim Aufrufen der Userdatenbank innerhalb des Admin-Dekorators!')
+
+        user_status = None
+        for user in benutzer_daten['users']:
+            if user['username'] == eingeloggter_user:
+                user_status = user['status']
+                break
+
+        if user_status != 'admin':
+            return HttpResponseForbidden("You are not allowed to access this page. Falscher User-Status!")
+
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
+########
+
+
 # Hier die Funktionen für Registrieren, Ein- und Auslogen
 #########################################################
-
 
 def register_view(request):
     if request.method == "POST":
@@ -456,12 +484,10 @@ def bericht_hochladen(request):
 
 
 ##################################################################################################
-
-
-# Hier die Funktionen für die Kacheln dein_Profil_admin, also Admin-Profilseite
+# Ab hier die Funktionen für die Kacheln dein_Profil_admin, also Admin-Profilseite
 ##################################################################################################
 
-
+@admin_berechtigung_check
 def profile_page_view(request):
     eingeloggter_user = request.session.get("username")
     user_initiale = eingeloggter_user[0].upper()
@@ -667,8 +693,9 @@ def benutzer_entsperren(request):
     return redirect("profile_page_admin")
 
 
-### ab hier: reportbare Module durch Admin festlegen   ###
+### ab hier: reportbare Module durch Admin festlegen, Modulverwaltung  ###
 
+@admin_berechtigung_check
 def module_edit(request):
     try:
         with open(datenbank_module_editable, 'r', encoding='utf-8') as file:
