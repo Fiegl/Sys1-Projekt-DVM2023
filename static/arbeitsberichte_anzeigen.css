@@ -85,7 +85,7 @@ table tr:hover {
 
 .action-button {
     padding: 8px 15px;
-    background-color: #e74c3c; 
+    background-color: #00e61f; 
     color: white;
     border: none;
     border-radius: 5px;
@@ -95,10 +95,16 @@ table tr:hover {
 }
 
 .action-button:hover {
-    background-color: #c0392b; 
+    background-color: #e74c3c; 
 }
 
-.action-button:active {
-    background-color: #a93226;
-}
 
+/* 
+hier kommen media queries zum Einsatz:
+Anleitung: https://www.w3schools.com/css/css_rwd_mediaqueries.asp                                
+*/
+
+
+@media (max-width: 768px) {
+
+}
