@@ -20,7 +20,7 @@ datenbank_module_editable = "/var/www/buchungssystem/db/module_editable.json"
 
 ### Zugriff auf URL ohne Berechtigung blocken mit Dekorator ###
 def admin_berechtigung_check(view_func):
-    @wraps(view_func)
+    @wraps(view_func)                                       # Dekorator aus dem functools-Modul, bewahrt die Metadaten der ursprünglichen Funktion (wichtig fürs Debuggen)
     def _wrapped_view(request, *args, **kwargs):
         eingeloggter_user = request.session.get("username")
         if not eingeloggter_user:
