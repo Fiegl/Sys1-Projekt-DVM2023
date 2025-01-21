@@ -404,11 +404,14 @@ def bericht_herunterladen(request, format, bericht_id):
 
     return HttpResponse("Bericht nicht gefunden.")
 
-# Quelle zum Nachlesen: https://docs.djangoproject.com/en/3.0/howto/outputting-csv/?utm_source=chatgpt.com
-#                       https://docs.djangoproject.com/en/5.1/ref/request-response/?utm_source=chatgpt.com
+# Quelle zum Nachlesen: https://docs.djangoproject.com/en/3.0/howto/outputting-csv/
+#                       https://docs.djangoproject.com/en/5.1/ref/request-response/
+#                       https://docs.python.org/3/library/json.html
+#                       https://docs.python.org/3/library/csv.html
+#                       https://docs.python.org/3/library/xml.etree.elementtree.html
 
 # Dieser Link ist interessant, wenn wir das in eine Klasse umwandeln wollen:
-# https://docs.djangoproject.com/en/5.1/topics/serialization/?utm_source=chatgpt.com
+# https://docs.djangoproject.com/en/5.1/topics/serialization/
 
 
 def bericht_hochladen(request):
