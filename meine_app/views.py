@@ -3,6 +3,7 @@ import uuid
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.auth import logout
 from django.http import HttpResponseBadRequest, HttpResponse, JsonResponse
 from datetime import datetime
 import xml.etree.ElementTree as ET
@@ -170,8 +171,9 @@ def home_view(request):
 
 
 def logout_view(request):
-    request.session.flush()
+    logout(request)
     return redirect("login")
+
 
 
 ####################################################################################
