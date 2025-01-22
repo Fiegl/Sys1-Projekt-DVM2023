@@ -96,27 +96,6 @@ def register_view(request):
         with open(registrierte_benutzer, "w", encoding="utf-8") as file:
             json.dump(data, file, indent=4)
 
-        # Benutzer auch in die arbeitsberichte.json hinzufügen
-        try:
-            with open(arbeitsbericht_erstellen, "r", encoding="utf-8") as file:
-                arbeitsberichte = json.load(file)
-                if "arbeitsberichte" not in arbeitsberichte:
-                    arbeitsberichte["arbeitsberichte"] = (
-                        []
-                    )  # Sicherstellen, dass die Liste existiert
-        except FileNotFoundError:
-            arbeitsberichte = {
-                "arbeitsberichte": []
-            }  # Initialisiere ein korrektes Dictionary
-
-        # Arbeitsberichte für neuen Benutzer initialisieren
-        arbeitsberichte["arbeitsberichte"].append(
-            {"name": username, "matrikelnummer": matrikelnummer, "berichte": {}}
-        )
-
-        with open(arbeitsbericht_erstellen, "w", encoding="utf-8") as file:
-            json.dump(arbeitsberichte, file, indent=4)
-
         # Automatisch einloggen und zur Startseite weiterleiten
         request.session["username"] = username
         request.session["matrikelnummer"] = matrikelnummer
