@@ -402,6 +402,33 @@ def arbeitsberichte_download_drucken_view(request):
     )
 
 
+def arbeitsberichte_download_drucken_view(request):
+    eingeloggter_user = request.session.get("username")
+    if not eingeloggter_user:
+        return redirect("login")  # Weiterleitung zur Login-Seite
+
+    try:
+        with open(arbeitsbericht_erstellen, "r", encoding="utf-8") as file:
+            daten = json.load(file)
+            berichte = daten.get("arbeitsberichte", [])
+            
+            # Filtere nur die Berichte des eingeloggten Benutzers
+            berichte = [
+                bericht for bericht in berichte if bericht.get("benutzername") == eingeloggter_user
+            ]
+    except FileNotFoundError:
+        berichte = []  # Falls die Datei fehlt
+    except json.JSONDecodeError:
+        return HttpResponseBadRequest("Fehler beim Laden der Arbeitsberichte-Datei.")
+
+    return render(
+        request,
+        "meine_app/arbeitsberichte_download_drucken.html",
+        {"berichte": berichte},
+    )
+
+
+
 def bericht_herunterladen(request, format, bericht_id):
     with open(arbeitsbericht_erstellen, "r", encoding="utf-8") as file:
         daten = json.load(file).get("arbeitsberichte", [])
