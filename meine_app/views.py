@@ -386,23 +386,6 @@ def arbeitsbericht_loeschen(request, bericht_id):
 
 
 def arbeitsberichte_download_drucken_view(request):
-    try:
-        with open(arbeitsbericht_erstellen, "r", encoding="utf-8") as file:
-            daten = json.load(file)
-            berichte = daten.get("arbeitsberichte", [])
-    except FileNotFoundError:
-        berichte = []
-    except json.JSONDecodeError:
-        return HttpResponseBadRequest("Fehler beim Laden der Arbeitsberichte-Datei.")
-
-    return render(
-        request,
-        "meine_app/arbeitsberichte_download_drucken.html",
-        {"berichte": berichte},
-    )
-
-
-def arbeitsberichte_download_drucken_view(request):
     eingeloggter_user = request.session.get("username")
     if not eingeloggter_user:
         return redirect("login")  # Weiterleitung zur Login-Seite
