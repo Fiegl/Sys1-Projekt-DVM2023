@@ -393,11 +393,11 @@ def arbeitsberichte_download_drucken_view(request):
     try:
         with open(arbeitsbericht_erstellen, "r", encoding="utf-8") as file:
             daten = json.load(file)
-            berichte = daten.get("arbeitsberichte", [])
+            eigene_berichte = daten.get("arbeitsberichte", [])
             
             # Filtere nur die Berichte des eingeloggten Benutzers
             berichte = [
-                bericht for bericht in berichte if bericht.get("benutzername") == eingeloggter_user
+                bericht for bericht in eigene_berichte if bericht.get("benutzername") == eingeloggter_user
             ]
     except FileNotFoundError:
         berichte = []  # Falls die Datei fehlt
