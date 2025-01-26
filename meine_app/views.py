@@ -190,6 +190,11 @@ def logout_view(request):
 
 
 def arbeitsbericht_erstellen_view(request):
+    
+    eingeloggter_user = request.session.get("username")
+    if not eingeloggter_user:
+        return redirect("login")  # Weiterleitung zur Login-Seite
+    
     try:
         with open(datenbank_module, "r", encoding="utf-8") as file:
             module = json.load(file)["module"]
