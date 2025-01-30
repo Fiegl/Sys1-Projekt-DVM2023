@@ -1,7 +1,5 @@
 body {
     font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
     background-color: #f4f4f4;
 }
 
@@ -85,7 +83,7 @@ table tr:hover {
 
 .action-button {
     padding: 8px 15px;
-    background-color: #00e61f; 
+    background-color: #0099cc; 
     color: white;
     border: none;
     border-radius: 5px;
@@ -95,16 +93,5 @@ table tr:hover {
 }
 
 .action-button:hover {
-    background-color: #e74c3c; 
-}
-
-
-/* 
-hier kommen media queries zum Einsatz:
-Anleitung: https://www.w3schools.com/css/css_rwd_mediaqueries.asp                                
-*/
-
-
-@media (max-width: 768px) {
-
+    background-color: #00e61f; 
 }
