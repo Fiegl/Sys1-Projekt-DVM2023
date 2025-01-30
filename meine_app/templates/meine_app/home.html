@@ -3,13 +3,14 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
     <title>Home</title>
     <link rel="stylesheet" type="text/css" href="{% static 'home.css' %}">
     <link rel="icon" type="image/png" href="{% static 'favicon.png' %}">
 </head>
 <body>
     <header>
-        <div class="header-content">
+        <div>
             <img src="{% static 'our_logo.png' %}" alt="Logo" class="logo">
             <form action="{% url 'logout' %}" method="post" class="ausloggen">
                 {% csrf_token %}
