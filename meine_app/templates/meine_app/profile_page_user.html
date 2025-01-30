@@ -41,7 +41,7 @@
                     <form method="post" action="{% url 'status_upgrade_anfrage' %}" onsubmit="return showAlert()">
                         {% csrf_token %}
                         <input type="hidden" name="matrikelnummer" value="{{ matrikelnummer }}">
-                        <button type="submit">Statusupgrade beantragen - hier klicken!</button>
+                        <button class="button-href" type="submit">Statusupgrade beantragen - hier klicken!</button>
                     </form>
                 </td>
             </tr>  
@@ -54,7 +54,7 @@
 
     <div class="druckContainer">
         <h1 id="druckUeberschrift">Zusammenfassung aller Arbeitsberichte</h1>
-        <button id="druckButton" onclick="printArbeitsberichteZusammenfassung()">Hier: Zusammenfassung Arbeitsberichte drucken</button>
+        <button class="button-href" id="druckButton" onclick="printArbeitsberichteZusammenfassung()">Hier: Zusammenfassung Arbeitsberichte drucken</button>
     </div>
     <br>
     <table id="tabelleDrucken">
@@ -104,4 +104,3 @@
     </script>
 </body>
 </html>
-
