@@ -12,13 +12,13 @@
         <a href="{% url 'home' %}" class="profile-button">Zur Startseite</a>
     </header>
     <main>
-        <h2>deine Arbeitsberichte</h2>
+        <h2>Deine Arbeitsberichte</h2>
         <div class="container">
             {% if berichte %}
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
+                        <th>ID des Arbeitsberichts</th>
                         <th>Modul</th>
                         <th>Berichtsname</th>
                         <th>Startzeit</th>
@@ -28,25 +28,25 @@
                         <th>Aktionen</th>
                     </tr>
                 </thead>
-           <tbody>
-    {% for bericht in berichte %}
-    <tr>
-        <td>{{ bericht.id }}</td>
-        <td>{{ bericht.modul }}</td>
-        <td>{{ bericht.berichtsname }}</td>
-        <td>{{ bericht.startzeit }}</td>
-        <td>{{ bericht.endzeit }}</td>
-        <td>{{ bericht.nettoarbeitszeit }}</td>
-        <td>{{ bericht.kommentare }}</td>
-        <td>
-            <form method="post" action="{% url 'arbeitsbericht_loeschen' bericht.id %}">
-                {% csrf_token %}
-                <button type="submit" class="action-button">Löschen</button>
-            </form>
-        </td>
-    </tr>
-    {% endfor %}
-</tbody>
+                <tbody>
+                    {% for bericht in berichte %}
+                    <tr>
+                        <td>{{ bericht.id }}</td>
+                        <td>{{ bericht.modul }}</td>
+                        <td>{{ bericht.berichtsname }}</td>
+                        <td>{{ bericht.startzeit }}</td>
+                        <td>{{ bericht.endzeit }}</td>
+                        <td>{{ bericht.nettoarbeitszeit }}</td>
+                        <td>{{ bericht.kommentare }}</td>
+                        <td>
+                            <form method="post" action="{% url 'arbeitsbericht_loeschen' bericht.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="action-button">Löschen</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
             </table>
             {% else %}
             <p>Es wurden noch keine Arbeitsberichte erstellt.</p>
@@ -55,4 +55,3 @@
     </main>
 </body>
 </html>
-
