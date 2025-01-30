@@ -93,3 +93,19 @@ th[colspan] {
         background-color: #e0e0e0 !important;    /* Befehl an Browser, Hintergrundfarben beim Drucken zu beachten */
     }
 }
+
+.button-href {
+    padding: 8px 18px;
+    background-color: #3290cf;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+.button-href:hover {
+background-color: #07b01e;
+}
