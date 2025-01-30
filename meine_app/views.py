@@ -302,39 +302,32 @@ def arbeitsbericht_speichern(request):
 
 
 def arbeitsberichte_anzeigen_view(request):
+
     eingeloggter_user = request.session.get("username")
     if not eingeloggter_user:
-        return redirect("login")  # Weiterleitung zur Login-Seite
+        return redirect("login")  
 
     eigene_berichte = []
 
     try:
         with open(arbeitsbericht_erstellen, "r", encoding="utf-8") as file:
-            daten = json.load(file)  # JSON-Daten laden
+            daten = json.load(file) 
+            berichte = daten.get("arbeitsberichte", [])  
 
-            # Lade die Arbeitsberichte (Liste)
-            berichte = daten.get("arbeitsberichte", [])
+            
+            for bericht in berichte:
+                hat_gueltige_id = bericht.get("id") is not None  
+                name_passt = bericht.get("name") == eingeloggter_user  
+                benutzername_passt = bericht.get("benutzername") == eingeloggter_user  
 
-            # Filtere Berichte des aktuellen Benutzers und ignoriere Einträge ohne ID
-            eigene_berichte = [
-                bericht
-                for bericht in berichte
-                if (
-                    bericht.get("name") == eingeloggter_user
-                    or bericht.get("benutzername") == eingeloggter_user
-                )
-                and bericht.get("id")  # Nur gültige Berichte mit "id"
-            ]
+                if hat_gueltige_id and (name_passt or benutzername_passt):
+                    eigene_berichte.append(bericht)  
+
     except (FileNotFoundError, json.JSONDecodeError):
-        # Fehlerbehandlung: keine Datei oder ungültige JSON
+       
         eigene_berichte = []
 
-    # Übergabe der Berichte an das Template
-    return render(
-        request,
-        "meine_app/arbeitsberichte_anzeigen.html",
-        {"berichte": eigene_berichte},
-    )
+    return render(request, "meine_app/arbeitsberichte_anzeigen.html", {"berichte": eigene_berichte})
     
     
 
@@ -343,20 +336,23 @@ def arbeitsbericht_loeschen(request, bericht_id):
         try:
             with open(arbeitsbericht_erstellen, "r", encoding="utf-8") as file:
                 daten = json.load(file)
+            
             berichte = daten.get("arbeitsberichte", [])
+            neue_berichte = []  
 
-            # Filtere den Bericht mit der angegebenen ID heraus
-            neue_berichte = [bericht for bericht in berichte if bericht.get("id") != bericht_id]
+            for bericht in berichte:
+                if bericht.get("id") != bericht_id:
+                    neue_berichte.append(bericht)  
+
             daten["arbeitsberichte"] = neue_berichte
 
-            # Speichere die aktualisierte Datei
             with open(arbeitsbericht_erstellen, "w", encoding="utf-8") as file:
                 json.dump(daten, file, indent=4)
 
         except (FileNotFoundError, json.JSONDecodeError, OSError):
             return HttpResponseBadRequest("Fehler beim Löschen des Berichts.")
 
-        return redirect("arbeitsberichte_anzeigen")  # Zurück zur Anzeige-Seite
+        return redirect("arbeitsberichte_anzeigen")
 
     return HttpResponseBadRequest("Ungültige Anfrage.")
 
@@ -369,62 +365,61 @@ def arbeitsbericht_loeschen(request, bericht_id):
 ####################################################################################################
 
 
+def lade_arbeitsberichte():
+    with open(arbeitsbericht_erstellen, "r", encoding="utf-8") as file:
+        return json.load(file).get("arbeitsberichte", [])
+
+
 def arbeitsberichte_download_drucken_view(request):
     eingeloggter_user = request.session.get("username")
     if not eingeloggter_user:
-        return redirect("login")  # Weiterleitung zur Login-Seite
+        return redirect("login")  
 
-    try:
-        with open(arbeitsbericht_erstellen, "r", encoding="utf-8") as file:
-            daten = json.load(file)
-            eigene_berichte = daten.get("arbeitsberichte", [])
-            
-            # Filtere nur die Berichte des eingeloggten Benutzers
-            berichte = [
-                bericht for bericht in eigene_berichte if bericht.get("benutzername") == eingeloggter_user
-            ]
-    except FileNotFoundError:
-        berichte = []  # Falls die Datei fehlt
-    except json.JSONDecodeError:
-        return HttpResponseBadRequest("Fehler beim Laden der Arbeitsberichte-Datei.")
+    berichte = lade_arbeitsberichte()  
+    eigene_berichte = []  
 
-    return render(
-        request,
-        "meine_app/arbeitsberichte_download_drucken.html",
-        {"berichte": berichte},
-    )
+    for bericht in berichte:  
+        if bericht["benutzername"] == eingeloggter_user:  
+            eigene_berichte.append(bericht)  
+
+    return render(request, "meine_app/arbeitsberichte_download_drucken.html", {"berichte": eigene_berichte})
 
 
+def bericht_als_json(request, bericht_id):
+    for bericht in lade_arbeitsberichte():
+        if bericht["id"] == bericht_id:
+            response = HttpResponse(json.dumps(bericht, indent=4), content_type="application/json")
+            response["Content-Disposition"] = f'attachment; filename="bericht_{bericht_id}.json"'
+            return response
 
-def bericht_herunterladen(request, format, bericht_id):
-    with open(arbeitsbericht_erstellen, "r", encoding="utf-8") as file:
-        daten = json.load(file).get("arbeitsberichte", [])
+    return HttpResponse(status=404)  # Falls kein Bericht gefunden wird
 
-    # hier nach den Berichten suchen und iterieren:
-    for bericht in daten:
-        if bericht.get("id") == bericht_id:
-            if format == "json":
-                response = HttpResponse(json.dumps(bericht, indent=4), content_type="application/json")
-                response["Content-Disposition"] = f"attachment; filename=bericht_{bericht_id}.json"
-                return response
 
-            elif format == "csv":
-                response = HttpResponse(content_type="text/csv")
-                response["Content-Disposition"] = f"attachment; filename=bericht_{bericht_id}.csv"
-                writer = csv.writer(response)
-                writer.writerow(bericht.keys())
-                writer.writerow(bericht.values())
-                return response
+def bericht_als_csv(request, bericht_id):
+    for bericht in lade_arbeitsberichte():
+        if bericht["id"] == bericht_id:
+            response = HttpResponse(content_type="text/csv")
+            response["Content-Disposition"] = f'attachment; filename="bericht_{bericht_id}.csv"'
+            writer = csv.writer(response)
+            writer.writerow(bericht.keys())
+            writer.writerow(bericht.values())
+            return response
 
-            elif format == "xml":
-                root = ET.Element("Arbeitsbericht")
-                for key, value in bericht.items():
-                    ET.SubElement(root, key).text = str(value)
-                response = HttpResponse(ET.tostring(root, encoding="unicode"), content_type="application/xml")
-                response["Content-Disposition"] = f"attachment; filename=bericht_{bericht_id}.xml"
-                return response
+    return HttpResponse(status=404)  # Falls kein Bericht gefunden wird
 
-    return HttpResponse("Bericht nicht gefunden.")
+
+def bericht_als_xml(request, bericht_id):
+    for bericht in lade_arbeitsberichte():
+        if bericht["id"] == bericht_id:
+            root = ET.Element("Arbeitsbericht")
+            for key, value in bericht.items():
+                ET.SubElement(root, key).text = str(value)
+
+            response = HttpResponse(ET.tostring(root, encoding="unicode"), content_type="application/xml")
+            response["Content-Disposition"] = f'attachment; filename="bericht_{bericht_id}.xml"'
+            return response
+
+    return HttpResponse(status=404)
 
 # Quelle zum Nachlesen: https://docs.djangoproject.com/en/3.0/howto/outputting-csv/
 #                       https://docs.djangoproject.com/en/5.1/ref/request-response/
