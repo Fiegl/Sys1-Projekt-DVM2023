@@ -42,7 +42,7 @@
                             {% csrf_token %}
                             <input type="hidden" name="username" value="{{ anfrage.username }}">
                             <input type="hidden" name="matrikelnummer" value="{{ anfrage.matrikelnummer }}">
-                            <button type="submit">User-Status upgraden und Anfrage löschen</button>
+                            <button class="button-href" type="submit">User-Status upgraden und Anfrage löschen</button>
                         </form>
                     </td>
                 </tr>
@@ -84,8 +84,8 @@
                     <form method="post" action="{% url 'status_upgrade' %}">
                         {% csrf_token %}
                         <input type="hidden" name="benutzername" value="{{ benutzer.username }}">
-                        <button type="submit">Upgrade Status</button>
-                        <button type="submit" formaction="{% url 'status_downgrade' %}">Downgrade Status</button>
+                        <button class="button-href" type="submit">Upgrade Status</button>
+                        <button class="button-href" type="submit" formaction="{% url 'status_downgrade' %}">Downgrade Status</button>
                     </form>
                 </td>
                 <td>
@@ -93,13 +93,13 @@
                     <form method="post" action="{% url 'benutzer_sperren' %}">
                         {% csrf_token %}
                         <input type="hidden" name="benutzername" value="{{ benutzer.username }}">
-                        <button type="submit">Benutzer sperren</button>
+                        <button class="button-href" type="submit">Benutzer sperren</button>
                     </form>
                     {% else %}
                     <form method="post" action="{% url 'benutzer_entsperren' %}">
                         {% csrf_token %}
                         <input type="hidden" name="benutzername" value="{{ benutzer.username }}">
-                        <button type="submit">Benutzer entsperren</button>
+                        <button class="button-href" type="submit">Benutzer entsperren</button>
                     </form>
                     {% endif %}
                 </td>
@@ -114,7 +114,7 @@
 
     <div class="druckContainer">
         <h1 id="druckUeberschrift">Zusammenfassung aller Arbeitsberichte</h1>
-        <button id="druckButton" onclick="printArbeitsberichteZusammenfassung()">Hier: Zusammenfassung Arbeitsberichte drucken</button>
+        <button class="button-href" id="druckButton" onclick="printArbeitsberichteZusammenfassung()">Hier: Zusammenfassung Arbeitsberichte drucken</button>
     </div>
     <br>
     <table id="tabelleDrucken">
@@ -149,9 +149,11 @@
     <br>
     <hr>
     <br>
-    <a href="{% url 'module_edit' %}">Link zur Seite, um die reportbaren Module zu managen</a>
+    <a href="{% url 'module_edit' %}">
+        <button type="button" class="button-href">Link zur Seite, um die reportbaren Module zu managen</button>
+    </a>
     <br>
-    
+
     <script>
         function printArbeitsberichteZusammenfassung() {
             const ueberschriftTabelle = document.getElementById("druckUeberschrift").outerHTML;
@@ -163,7 +165,5 @@
             document.body.innerHTML = ganzerInhaltSeite;
         }
     </script>
-    
 </body>
 </html>
-
