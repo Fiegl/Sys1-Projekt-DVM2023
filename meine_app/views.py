@@ -367,7 +367,8 @@ def arbeitsbericht_loeschen(request, bericht_id):
 
 def lade_arbeitsberichte():
     with open(arbeitsbericht_erstellen, "r", encoding="utf-8") as file:
-        return json.load(file).get("arbeitsberichte", [])
+        daten = json.load(file)
+        return daten["arbeitsberichte"]
 
 
 def arbeitsberichte_download_drucken_view(request):
