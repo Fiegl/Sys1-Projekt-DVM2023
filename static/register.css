@@ -81,28 +81,3 @@ button:hover {
     display: block;
     color: #007bff;
 }
-
-/* Responsives Design für kleinere Bildschirme */
-@media (max-width: 600px) {
-    header h1 {
-        font-size: 1.2em;
-    }
-
-    .container {
-        padding: 15px;
-        max-width: 90%;
-    }
-
-    h2 {
-        font-size: 1.3em;
-    }
-
-    button {
-        padding: 8px;
-    }
-
-    input[type="text"],
-    input[type="password"] {
-        padding: 8px;
-    }
-}
