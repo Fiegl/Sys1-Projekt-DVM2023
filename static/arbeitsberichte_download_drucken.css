@@ -1,7 +1,5 @@
 body {
     font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
     background-color: #f4f4f4;
 }
 
@@ -93,7 +91,7 @@ table tr:nth-child(even) {
 }
 
 .action-button:hover {
-    background-color: #005fa3;
+    background-color: #07b01e;
 }
 
 .action-button:active {
@@ -115,7 +113,7 @@ table tr:nth-child(even) {
 }
 
 .upload-button:hover {
-    background-color: #005fa3;
+    background-color: #07b01e;
 }
 
 .upload-button:active {
