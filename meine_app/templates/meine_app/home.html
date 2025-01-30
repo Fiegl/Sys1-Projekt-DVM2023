@@ -5,11 +5,12 @@
     <meta charset="UTF-8">
     <title>Home</title>
     <link rel="stylesheet" type="text/css" href="{% static 'home.css' %}">
+    <link rel="icon" type="image/png" href="{% static 'favicon.png' %}">
 </head>
 <body>
     <header>
         <div class="header-content">
-            <div class="logo">DVM-Zeiterfassung</div>
+            <img src="{% static 'our_logo.png' %}" alt="Logo" class="logo">
             <form action="{% url 'logout' %}" method="post" class="ausloggen">
                 {% csrf_token %}
                 <button type="submit" class="ausloggen_button">Logout</button>
@@ -25,7 +26,7 @@
                 alle Berichte anzeigen
             </a>
             <a href="{% url 'arbeitsberichte_download_drucken' %}" class="kachel" id="kachel3" onclick="checkStatus(event, this.href)">
-                Download
+                Download & Upload
             </a>
             <a href="#" class="kachel" id="kachel4" onclick="redirectToProfile()">
                 dein Profil
@@ -52,10 +53,11 @@
         function showAlert() {
             document.getElementById('meinAlert').style.display = 'block';
         }
+
         function closeAlert() {
             document.getElementById('meinAlert').style.display = 'none';
         }
-        
+
         function redirectToProfile() {
             if (loggedInUser === 'admin') {
                 window.location.href = "{% url 'profile_page_admin' %}";
