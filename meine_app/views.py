@@ -387,7 +387,10 @@ def arbeitsberichte_download_drucken_view(request):
 
 
 def bericht_als_json(request, bericht_id):
-    for bericht in lade_arbeitsberichte():
+
+    berichte = lade_arbeitsberichte()
+    
+    for bericht in berichte:
         if bericht["id"] == bericht_id:
             response = HttpResponse(json.dumps(bericht, indent=4), content_type="application/json")
             response["Content-Disposition"] = f'attachment; filename="bericht_{bericht_id}.json"'
@@ -397,7 +400,10 @@ def bericht_als_json(request, bericht_id):
 
 
 def bericht_als_csv(request, bericht_id):
-    for bericht in lade_arbeitsberichte():
+
+    berichte = lade_arbeitsberichte()
+    
+    for bericht in berichte:
         if bericht["id"] == bericht_id:
             response = HttpResponse(content_type="text/csv")
             response["Content-Disposition"] = f'attachment; filename="bericht_{bericht_id}.csv"'
@@ -410,7 +416,10 @@ def bericht_als_csv(request, bericht_id):
 
 
 def bericht_als_xml(request, bericht_id):
-    for bericht in lade_arbeitsberichte():
+    
+    berichte = lade_arbeitsberichte()
+    
+    for bericht in berichte:
         if bericht["id"] == bericht_id:
             root = ET.Element("Arbeitsbericht")
             for key, value in bericht.items():
