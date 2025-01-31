@@ -33,13 +33,13 @@
                         <td>{{ bericht.berichtsname }}</td>
                         <td>
                             <div class="action-buttons">
-                                <form method="get" action="{% url 'bericht_herunterladen_json' bericht.id %}">
+                                <form method="get" action="{% url 'bericht_als_json' bericht.id %}">
                                     <button type="submit" class="action-button">JSON</button>
                                 </form>
-                                <form method="get" action="{% url 'bericht_herunterladen_csv' bericht.id %}">
+                                <form method="get" action="{% url 'bericht_als_csv' bericht.id %}">
                                     <button type="submit" class="action-button">CSV</button>
                                 </form>
-                                <form method="get" action="{% url 'bericht_herunterladen_xml' bericht.id %}">
+                                <form method="get" action="{% url 'bericht_als_xml' bericht.id %}">
                                     <button type="submit" class="action-button">XML</button>
                                 </form>
                             </div>
@@ -65,3 +65,4 @@
 </body>
 
 </html>
+
