@@ -15,9 +15,9 @@ urlpatterns = [
     
    
     path('arbeitsberichte_download_drucken/', views.arbeitsberichte_download_drucken_view, name='arbeitsberichte_download_drucken'),
-    path('bericht_herunterladen/json/<str:bericht_id>/', views.bericht_als_json, name='bericht_herunterladen_json'),
-    path('bericht_herunterladen/csv/<str:bericht_id>/', views.bericht_als_csv, name='bericht_herunterladen_csv'),
-    path('bericht_herunterladen/xml/<str:bericht_id>/', views.bericht_als_xml, name='bericht_herunterladen_xml'),
+    path('bericht_als_json/json/<str:bericht_id>/', views.bericht_als_json, name='bericht_als_json'),
+    path('bericht_als_csv/csv/<str:bericht_id>/', views.bericht_als_csv, name='bericht_als_csv'),
+    path('bericht_als_xml/xml/<str:bericht_id>/', views.bericht_als_xml, name='bericht_als_xml'),
     path('bericht_hochladen/', views.bericht_hochladen, name='bericht_hochladen'),
 
 
